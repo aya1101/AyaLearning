@@ -1,0 +1,16 @@
+{
+  "name": "japanese-learning-app",
+  "version": "1.0.0",
+  "description": "A full-stack Japanese learning application",
+  "main": "index.js",
+  "scripts": {
+    "start-dev": "concurrently \"npm run start --prefix frontend\" \"npm start --prefix backend\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
