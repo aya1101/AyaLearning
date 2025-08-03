@@ -1,2 +1,2 @@
 # AyaLearning
-My personal space for mastering Japanese :3
+My personal space for picking up Japanese :3
