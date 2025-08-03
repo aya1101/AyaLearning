@@ -98,7 +98,7 @@ router.post('/vocabulary', async (req, res) => {
   }
 });
 
-module.exports = router;
+// Chat route
 router.post('/chat', async (req, res) => {
   try {
     const { message, role } = req.body;
