@@ -24,3 +24,9 @@ dist/
 # OS generated files
 .DS_Store
 .vscode/
+
+# Do NOT ignore frontend source code
+!frontend/src/
+!frontend/public/
+!frontend/package.json
+!frontend/README.md
