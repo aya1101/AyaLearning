@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ChatBot from './components/ChatBot';
 
-// Hàm trợ giúp để xáo trộn mảng (Không thay đổi)
+// submodule: shuffleArray
 const shuffleArray = (array) => {
   let currentIndex = array.length, randomIndex;
   while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+    [array[currentIndex], array[randomIndex]] = 
+      [array[randomIndex], array[currentIndex]];
   }
   return array;
 };
 
 // =================================================================
-// COMPONENT MÀN HÌNH KẾT THÚC QUIZ
+// component: Quiz End Screen
 // =================================================================
 const QuizEndScreen = ({ score, total, imageSrc, imageAlt, onRestart, onGoBack }) => {
   return (
@@ -54,7 +54,7 @@ const QuizEndScreen = ({ score, total, imageSrc, imageAlt, onRestart, onGoBack }
 
 
 // =================================================================
-// COMPONENT PHÂN TRANG (PAGINATION)
+// component: Pagination (phân trang)
 // =================================================================
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;
@@ -79,10 +79,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
 
 // =================================================================
-// COMPONENT MÀN HÌNH CHÍNH (KANJI & TỪ VỰNG)
+// component: màn hình chính (kanji & từ vựng)
 // =================================================================
 // -- Kanji Section --
-const KanjiSection = ({ kanjiList, newKanji, handleNewKanjiChange, handleAddKanji, onStartQuiz, currentPage, onPageChange, itemsPerPage }) => {
+const KanjiSection = ({ kanjiList, newKanji, handleNewKanjiChange, handleAddKanji, onStartQuiz, currentPage, onPageChange, itemsPerPage, onEditKanji, onDeleteKanji, editingKanji, onUpdateKanji, onCancelEdit }) => {
     const totalPages = Math.ceil(kanjiList.length / itemsPerPage);
     const paginatedKanji = kanjiList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -121,17 +121,59 @@ const KanjiSection = ({ kanjiList, newKanji, handleNewKanjiChange, handleAddKanj
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kun'yomi</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nghĩa</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cấp độ</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {paginatedKanji.map((kanji) => (
                             <tr key={kanji.id}>
-                                <td className="px-6 py-4">{kanji.kanji_char}</td>
-                                <td className="px-6 py-4">{kanji.han_tu}</td>
-                                <td className="px-6 py-4">{kanji.onyomi}</td>
-                                <td className="px-6 py-4">{kanji.kunyomi}</td>
-                                <td className="px-6 py-4">{kanji.meaning}</td>
-                                <td className="px-6 py-4">{kanji.level}</td>
+                                {editingKanji && editingKanji.id === kanji.id ? (
+                                    <>
+                                        <td className="px-6 py-4"><input value={editingKanji.kanji_char} onChange={(e) => onEditKanji({...editingKanji, kanji_char: e.target.value})} className="w-full p-1 border rounded" /></td>
+                                        <td className="px-6 py-4"><input value={editingKanji.han_tu} onChange={(e) => onEditKanji({...editingKanji, han_tu: e.target.value})} className="w-full p-1 border rounded" /></td>
+                                        <td className="px-6 py-4"><input value={editingKanji.onyomi} onChange={(e) => onEditKanji({...editingKanji, onyomi: e.target.value})} className="w-full p-1 border rounded" /></td>
+                                        <td className="px-6 py-4"><input value={editingKanji.kunyomi} onChange={(e) => onEditKanji({...editingKanji, kunyomi: e.target.value})} className="w-full p-1 border rounded" /></td>
+                                        <td className="px-6 py-4"><input value={editingKanji.meaning} onChange={(e) => onEditKanji({...editingKanji, meaning: e.target.value})} className="w-full p-1 border rounded" /></td>
+                                        <td className="px-6 py-4">
+                                            <select value={editingKanji.level} onChange={(e) => onEditKanji({...editingKanji, level: e.target.value})} className="w-full p-1 border rounded">
+                                                <option value="N5">N5</option>
+                                                <option value="N4">N4</option>
+                                                <option value="N3">N3</option>
+                                                <option value="N2">N2</option>
+                                                <option value="N1">N1</option>
+                                            </select>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex space-x-2">
+                                                <button onClick={() => onUpdateKanji(editingKanji)} className="bg-green-500 text-white px-2 py-1 rounded text-sm hover:bg-green-600">Lưu</button>
+                                                <button onClick={onCancelEdit} className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600">Hủy</button>
+                                            </div>
+                                        </td>
+                                    </>
+                                ) : (
+                                    <>
+                                        <td className="px-6 py-4">{kanji.kanji_char}</td>
+                                        <td className="px-6 py-4">{kanji.han_tu}</td>
+                                        <td className="px-6 py-4">{kanji.onyomi}</td>
+                                        <td className="px-6 py-4">{kanji.kunyomi}</td>
+                                        <td className="px-6 py-4">{kanji.meaning}</td>
+                                        <td className="px-6 py-4">{kanji.level}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex space-x-2">
+                                                <button onClick={() => onEditKanji(kanji)} className="bg-blue-500 text-white p-2 rounded text-sm hover:bg-blue-600 transition-colors" title="Sửa">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </button>
+                                                <button onClick={() => onDeleteKanji(kanji.id)} className="bg-red-500 text-white p-2 rounded text-sm hover:bg-red-600 transition-colors" title="Xóa">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </>
+                                )}
                             </tr>
                         ))}
                     </tbody>
@@ -148,7 +190,7 @@ const KanjiSection = ({ kanjiList, newKanji, handleNewKanjiChange, handleAddKanj
 };
 
 // -- Vocabulary Section --
-const VocabularySection = ({ vocabularyList, newVocabulary, handleNewVocabularyChange, handleAddVocabulary, onStartQuiz, currentPage, onPageChange, itemsPerPage }) => {
+const VocabularySection = ({ vocabularyList, newVocabulary, handleNewVocabularyChange, handleAddVocabulary, onStartQuiz, currentPage, onPageChange, itemsPerPage, onEditVocabulary, onDeleteVocabulary, editingVocabulary, onUpdateVocabulary, onCancelEdit }) => {
     const totalPages = Math.ceil(vocabularyList.length / itemsPerPage);
     const paginatedVocabulary = vocabularyList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
@@ -183,15 +225,55 @@ const VocabularySection = ({ vocabularyList, newVocabulary, handleNewVocabularyC
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Furigana</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">意味</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {paginatedVocabulary.map((vocab) => (
                             <tr key={vocab.id}>
-                                <td className="px-6 py-4">{vocab.word}</td>
-                                <td className="px-6 py-4">{vocab.furigana}</td>
-                                <td className="px-6 py-4">{vocab.meaning}</td>
-                                <td className="px-6 py-4">{vocab.level}</td>
+                                {editingVocabulary && editingVocabulary.id === vocab.id ? (
+                                    <>
+                                        <td className="px-6 py-4"><input value={editingVocabulary.word} onChange={(e) => onEditVocabulary({...editingVocabulary, word: e.target.value})} className="w-full p-1 border rounded" /></td>
+                                        <td className="px-6 py-4"><input value={editingVocabulary.furigana} onChange={(e) => onEditVocabulary({...editingVocabulary, furigana: e.target.value})} className="w-full p-1 border rounded" /></td>
+                                        <td className="px-6 py-4"><input value={editingVocabulary.meaning} onChange={(e) => onEditVocabulary({...editingVocabulary, meaning: e.target.value})} className="w-full p-1 border rounded" /></td>
+                                        <td className="px-6 py-4">
+                                            <select value={editingVocabulary.level} onChange={(e) => onEditVocabulary({...editingVocabulary, level: e.target.value})} className="w-full p-1 border rounded">
+                                                <option value="N5">N5</option>
+                                                <option value="N4">N4</option>
+                                                <option value="N3">N3</option>
+                                                <option value="N2">N2</option>
+                                                <option value="N1">N1</option>
+                                            </select>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex space-x-2">
+                                                <button onClick={() => onUpdateVocabulary(editingVocabulary)} className="bg-green-500 text-white px-2 py-1 rounded text-sm hover:bg-green-600">Lưu</button>
+                                                <button onClick={onCancelEdit} className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600">Hủy</button>
+                                            </div>
+                                        </td>
+                                    </>
+                                ) : (
+                                    <>
+                                        <td className="px-6 py-4">{vocab.word}</td>
+                                        <td className="px-6 py-4">{vocab.furigana}</td>
+                                        <td className="px-6 py-4">{vocab.meaning}</td>
+                                        <td className="px-6 py-4">{vocab.level}</td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex space-x-2">
+                                                <button onClick={() => onEditVocabulary(vocab)} className="bg-blue-500 text-white p-2 rounded text-sm hover:bg-blue-600 transition-colors" title="Sửa">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </button>
+                                                <button onClick={() => onDeleteVocabulary(vocab.id)} className="bg-red-500 text-white p-2 rounded text-sm hover:bg-red-600 transition-colors" title="Xóa">
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </>
+                                )}
                             </tr>
                         ))}
                     </tbody>
@@ -208,7 +290,7 @@ const VocabularySection = ({ vocabularyList, newVocabulary, handleNewVocabularyC
 };
 
 // =================================================================
-// COMPONENT QUIZ (ĐÃ CẬP NHẬT)
+// component Quiz
 // =================================================================
 
 // -- Kanji Quiz Section --
@@ -427,7 +509,7 @@ const VocabularyQuizSection = ({ vocabularyList, onQuizEnd, onGoBack }) => {
 
 
 // =================================================================
-// MAIN APP COMPONENT
+// main App component
 // =================================================================
 const App = () => {
   const API_URL = 'http://localhost:3001/api';
@@ -443,15 +525,19 @@ const App = () => {
   const [kanjiPage, setKanjiPage] = useState(1);
   const [vocabPage, setVocabPage] = useState(1);
 
-  // THÊM MỚI: State cho tìm kiếm
+  // State cho tìm kiếm
   const [kanjiSearchTerm, setKanjiSearchTerm] = useState('');
   const [vocabSearchTerm, setVocabSearchTerm] = useState('');
+
+  // State cho chỉnh sửa
+  const [editingKanji, setEditingKanji] = useState(null);
+  const [editingVocabulary, setEditingVocabulary] = useState(null);
 
   const [quizResult, setQuizResult] = useState({ score: 0, total: 0, type: '' });
   const [newKanji, setNewKanji] = useState({ kanji_char: '', han_tu: '', onyomi: '', kunyomi: '', meaning: '', level: 'N3' });
   const [newVocabulary, setNewVocabulary] = useState({ word: '', furigana: '', meaning: '', level: 'N3' });
 
-  // Tải dữ liệu từ Backend
+  // Tải dữ liệu từ backend
   useEffect(() => {
     const fetchData = async () => {
         try {
@@ -474,7 +560,7 @@ const App = () => {
     fetchData();
   }, []);
 
-  // THÊM MỚI: Lọc danh sách dựa trên từ khóa tìm kiếm
+  // lọc danh sách dựa trên từ khóa tìm kiếm
   const filteredKanji = useMemo(() => {
     const term = kanjiSearchTerm.toLowerCase();
     if (!term) return kanjiList;
@@ -497,7 +583,7 @@ const App = () => {
     );
   }, [vocabSearchTerm, vocabularyList]);
 
-  // --- HÀM XỬ LÝ (Handlers) ĐỂ GỌI API ---
+  // --- Handlers ĐỂ GỌI API ---
   const handleNewKanjiChange = (e) => setNewKanji(prev => ({ ...prev, [e.target.name]: e.target.value }));
   const handleAddKanji = async (e) => {
     e.preventDefault();
@@ -508,15 +594,110 @@ const App = () => {
             body: JSON.stringify(newKanji)
         });
         if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.message || 'Lỗi khi thêm Kanji');
+            const contentType = response.headers.get('content-type');
+            if (contentType?.includes('application/json')) {
+                const errData = await response.json();
+                if (errData.code === 'ER_DUP_ENTRY' || errData.message.includes('Duplicate entry')) {
+                    throw new Error(`Kanji "${newKanji.kanji_char}" đã tồn tại trong database!`);
+                }
+                throw new Error(errData.message || 'Lỗi khi thêm Kanji');
+            } else {
+                throw new Error(`HTTP ${response.status}: Server không trả về JSON`);
+            }
         }
         const addedKanji = await response.json();
         setKanjiList(prev => [addedKanji, ...prev]);
         setKanjiPage(1);
         setNewKanji({ kanji_char: '', han_tu: '', onyomi: '', kunyomi: '', meaning: '', level: 'N3' });
+        alert('Thêm Kanji thành công!');
     } catch (error) {
         console.error("Lỗi khi thêm Kanji:", error);
+        alert(`Lỗi: ${error.message}`);
+    }
+  };
+
+  // Handlers cho Kanji editing
+  const handleEditKanji = (kanji) => {
+    setEditingKanji(kanji);
+  };
+
+  const handleUpdateKanji = async (updatedKanji) => {
+    try {
+        const response = await fetch(`${API_URL}/kanji/${updatedKanji.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedKanji)
+        });
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.message || 'Lỗi khi cập nhật Kanji');
+        }
+        const updated = await response.json();
+        setKanjiList(prev => prev.map(k => k.id === updated.id ? updated : k));
+        setEditingKanji(null);
+    } catch (error) {
+        console.error("Lỗi khi cập nhật Kanji:", error);
+        alert(`Lỗi: ${error.message}`);
+    }
+  };
+
+  const handleDeleteKanji = async (id) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa Kanji này?')) return;
+    
+    console.log('Attempting to delete Kanji with ID:', id);
+    
+    try {
+        const response = await fetch(`${API_URL}/kanji/${id}`, {
+            method: 'DELETE'
+        });
+        
+        console.log('Delete response status:', response.status);
+        console.log('Delete response headers:', response.headers.get('content-type'));
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                // Item already deleted or doesn't exist - remove from UI anyway
+                console.log('Item not found in database, removing from UI');
+                setKanjiList(prev => prev.filter(k => k.id !== id));
+                alert('Kanji không tồn tại trong database, đã xóa khỏi danh sách');
+                return;
+            }
+            
+            const contentType = response.headers.get('content-type');
+            if (contentType?.includes('application/json')) {
+                const errData = await response.json();
+                throw new Error(errData.message || `HTTP ${response.status}: Lỗi khi xóa Kanji`);
+            } else {
+                throw new Error(`HTTP ${response.status}: Backend DELETE endpoint có vấn đề`);
+            }
+        }
+        
+        // Check if there's a response body
+        const contentType = response.headers.get('content-type');
+        let responseData = null;
+        if (contentType?.includes('application/json')) {
+            responseData = await response.json();
+            console.log('Delete response data:', responseData);
+        }
+        
+        // Successfully deleted - update the list immediately
+        console.log('Delete successful, updating state...');
+        setKanjiList(prev => {
+            const newList = prev.filter(k => k.id !== id);
+            console.log('Old list length:', prev.length, 'New list length:', newList.length);
+            return newList;
+        });
+        
+        // Reset page if current page is empty
+        const totalPages = Math.ceil((kanjiList.length - 1) / ITEMS_PER_PAGE);
+        if (kanjiPage > totalPages && totalPages > 0) {
+            setKanjiPage(totalPages);
+        }
+        
+        alert('Xóa Kanji thành công!');
+        
+    } catch (error) {
+        console.error("Lỗi khi xóa Kanji:", error);
         alert(`Lỗi: ${error.message}`);
     }
   };
@@ -537,17 +718,108 @@ const App = () => {
             body: JSON.stringify(vocabToSend)
         });
         if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.message || 'Lỗi khi thêm từ vựng');
+            const contentType = response.headers.get('content-type');
+            if (contentType?.includes('application/json')) {
+                const errData = await response.json();
+                if (errData.code === 'ER_DUP_ENTRY' || errData.message.includes('Duplicate entry')) {
+                    throw new Error(`Từ vựng "${newVocabulary.word}" đã tồn tại trong database!`);
+                }
+                throw new Error(errData.message || 'Lỗi khi thêm từ vựng');
+            } else {
+                throw new Error(`HTTP ${response.status}: Server không trả về JSON`);
+            }
         }
         const addedVocab = await response.json();
         setVocabularyList(prev => [addedVocab, ...prev]);
         setVocabPage(1);
         setNewVocabulary({ word: '', furigana: '', meaning: '', level: 'N3' });
+        alert('Thêm từ vựng thành công!');
     } catch (error) {
         console.error("Lỗi khi thêm từ vựng:", error);
         alert(`Lỗi: ${error.message}`);
     }
+  };
+
+  // Handlers cho Vocabulary editing
+  const handleEditVocabulary = (vocabulary) => {
+    setEditingVocabulary(vocabulary);
+  };
+
+  const handleUpdateVocabulary = async (updatedVocabulary) => {
+    try {
+        const response = await fetch(`${API_URL}/vocabulary/${updatedVocabulary.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedVocabulary)
+        });
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.message || 'Lỗi khi cập nhật từ vựng');
+        }
+        const updated = await response.json();
+        setVocabularyList(prev => prev.map(v => v.id === updated.id ? updated : v));
+        setEditingVocabulary(null);
+    } catch (error) {
+        console.error("Lỗi khi cập nhật từ vựng:", error);
+        alert(`Lỗi: ${error.message}`);
+    }
+  };
+
+  const handleDeleteVocabulary = async (id) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa từ vựng này?')) return;
+    
+    console.log('Attempting to delete Vocabulary with ID:', id);
+    
+    try {
+        const response = await fetch(`${API_URL}/vocabulary/${id}`, {
+            method: 'DELETE'
+        });
+        
+        console.log('Delete response status:', response.status);
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                // Item already deleted or doesn't exist - remove from UI anyway
+                setVocabularyList(prev => prev.filter(v => v.id !== id));
+                alert('Từ vựng không tồn tại trong database, đã xóa khỏi danh sách');
+                return;
+            }
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (contentType?.includes('application/json')) {
+                const errData = await response.json();
+                throw new Error(errData.message || `HTTP ${response.status}: Lỗi khi xóa từ vựng`);
+            } else {
+                throw new Error(`HTTP ${response.status}: Endpoint DELETE /vocabulary/${id} không tồn tại hoặc backend chưa được cài đặt đúng`);
+            }
+        }
+        
+        // Successfully deleted - update the list immediately
+        console.log('Delete successful, updating state...');
+        setVocabularyList(prev => {
+            const newList = prev.filter(v => v.id !== id);
+            console.log('New list length:', newList.length);
+            return newList;
+        });
+        
+        // Reset page if current page is empty
+        const totalPages = Math.ceil((vocabularyList.length - 1) / ITEMS_PER_PAGE);
+        if (vocabPage > totalPages && totalPages > 0) {
+            setVocabPage(totalPages);
+        }
+        
+        alert('Xóa từ vựng thành công!');
+        
+    } catch (error) {
+        console.error("Lỗi khi xóa từ vựng:", error);
+        alert(`Lỗi: ${error.message}`);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingKanji(null);
+    setEditingVocabulary(null);
   };
   
   const handleQuizEnd = (score, total, type) => {
@@ -570,7 +842,7 @@ const App = () => {
       setViewState('main');
   };
 
-  // --- HÀM LẤY GIF DỰA TRÊN ĐIỂM SỐ ---
+  // --- Get gif feedback ---
   const getFeedbackGif = (score, total) => {
     if (total === 0) {
         return "/Mucho Estudio GIF - Anime Study Concentrate - Discover & Share GIFs.gif";
@@ -597,7 +869,7 @@ const App = () => {
             <h1 className="text-3xl font-bold">AyaLearning</h1>
           </div>
 
-          {/* THAY ĐỔI: Di chuyển thanh tìm kiếm lên header */}
+          {/* thanh tìm kiếm ở header */}
           {viewState === 'main' && (
             <div className="relative flex-grow max-w-lg w-full">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -633,6 +905,11 @@ const App = () => {
             currentPage={kanjiPage}
             onPageChange={setKanjiPage}
             itemsPerPage={ITEMS_PER_PAGE}
+            onEditKanji={handleEditKanji}
+            onDeleteKanji={handleDeleteKanji}
+            editingKanji={editingKanji}
+            onUpdateKanji={handleUpdateKanji}
+            onCancelEdit={handleCancelEdit}
           />
         )}
         {viewState === 'main' && activeTab === 'vocabulary' && (
@@ -645,6 +922,11 @@ const App = () => {
             currentPage={vocabPage}
             onPageChange={setVocabPage}
             itemsPerPage={ITEMS_PER_PAGE}
+            onEditVocabulary={handleEditVocabulary}
+            onDeleteVocabulary={handleDeleteVocabulary}
+            editingVocabulary={editingVocabulary}
+            onUpdateVocabulary={handleUpdateVocabulary}
+            onCancelEdit={handleCancelEdit}
           />
         )}
         {viewState === 'quiz' && activeTab === 'kanji' && (
@@ -677,7 +959,7 @@ const App = () => {
         <p>Learning Japanese with Aya ✍(◔◡◔)</p>
       </footer>
 
-      {/* Add ChatBot component */}
+      {/* ChatBot component */}
       <ChatBot />
     </div>
   );
