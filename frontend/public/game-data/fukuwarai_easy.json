@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "game": "fukuwarai",
+    "difficulty": 1,
+    "difficultyName": "Easy (N5)",
+    "challengeCount": 10,
+    "lastUpdated": "2026-02-24"
+  },
+  "challenges": [
+    {
+      "id": 1,
+      "targetKanji": "森",
+      "components": ["木", "木", "木"],
+      "meaning": "rừng",
+      "hint": "ba cái gỗ",
+      "explanation": "cây (木) + cây (木) + cây (木) = rừng"
+    },
+    {
+      "id": 2,
+      "targetKanji": "日",
+      "components": ["一", "│", "一"],
+      "meaning": "mặt trời, ngày",
+      "hint": "khung hình vuông",
+      "explanation": "một bộ thủ nhất tạo thành hình vuông = mặt trời"
+    },
+    {
+      "id": 3,
+      "targetKanji": "火",
+      "components": ["ノ", "ヽ", "ノ"],
+      "meaning": "lửa",
+      "hint": "ba ngọn lửa",
+      "explanation": "ba nét lửa chồng lên nhau"
+    },
+    {
+      "id": 4,
+      "targetKanji": "水",
+      "components": ["氵"],
+      "meaning": "nước",
+      "hint": "dạng đơn giản của nước",
+      "explanation": "bộ thủ nước là 氵(さんずい)"
+    },
+    {
+      "id": 5,
+      "targetKanji": "女",
+      "components": ["ノ", "八", "エ"],
+      "meaning": "phụ nữ",
+      "hint": "hình bà cái",
+      "explanation": "các nét vẽ tạo hình một người phụ nữ"
+    },
+    {
+      "id": 6,
+      "targetKanji": "男",
+      "components": ["田", "力"],
+      "meaning": "nam giới",
+      "hint": "cánh đồng kết hợp lực",
+      "explanation": "cánh đồng (田) + lực (力) = nam giới"
+    },
+    {
+      "id": 7,
+      "targetKanji": "自",
+      "components": ["一", "目", "一"],
+      "meaning": "tự, bản thân",
+      "hint": "mắt khoanh tròn",
+      "explanation": "mắt (目) được khoanh trong hình chữ nhật"
+    },
+    {
+      "id": 8,
+      "targetKanji": "月",
+      "components": ["一", "乂", "一"],
+      "meaning": "tháng, mặt trăng",
+      "hint": "khung hình chữ nhật",
+      "explanation": "bộ thủ tháng là một hình chữ nhật"
+    },
+    {
+      "id": 9,
+      "targetKanji": "目",
+      "components": ["口"],
+      "meaning": "mắt",
+      "hint": "hình vuông khoanh lại",
+      "explanation": "mắt được biểu diễn bằng một hình vuông"
+    },
+    {
+      "id": 10,
+      "targetKanji": "心",
+      "components": ["ノ", "心"],
+      "meaning": "trái tim",
+      "hint": "hình trái tim",
+      "explanation": "bộ thủ tâm là 心 (こころ)"
+    }
+  ]
+}

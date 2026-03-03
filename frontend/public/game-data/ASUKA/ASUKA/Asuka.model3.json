@@ -1,0 +1,23 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Asuka.moc3",
+		"Textures": [
+			"Asuka.4096/texture_00.png"
+		],
+		"Physics": "Asuka.physics3.json",
+		"DisplayInfo": "Asuka.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	]
+}

@@ -1,111 +1,165 @@
-# AyaLearning 
+# AyaLearning
 
-My personal space for picking up Japanese :3
+My personal Japanese learning space (Kanji, Vocabulary, Quiz, Kaiwa voice chat).
+
+![Dashboard](dashboard.png)
 
 ## Features
 
-- Add,fix, delete search, and view Kanji and Vocabulary.
-- Take quizzes to test your knowledge.
-- Pagination for large lists.
-- ChatBot assistant for interactive help.
-- Responsive UI with Tailwind CSS.
+- Kanji & Vocabulary management (add/edit/delete/search/pagination)
+![alt text](image.png)
+- Multiple quiz experiences for self-practice and quick review
+- AI assistant agent for in-app guidance, quick navigation, and study support
+![alt text](assistant.png)
+- Kaiwa with character personas (Anya, Asuka Sensei, Nyanko) using Live2D avatar playback + audio-driven lip-sync + real-time voice mode: ASR (Faster-Whisper) → LLM reply → TTS (VOICEVOX)  
+![alt text](kaiwa.png)
+- Japanese learning mini-games: Shiritori, Karuta, and Fukuwarai (updating)
+![alt text](games.png)
 
-## Getting Started
+## Tech Stack
+
+- Frontend: React, React Hooks, Tailwind CSS
+- Backend: Node.js, Express, REST API
+- Authentication: Google OAuth 2.0 + JWT
+- Database: PostgreSQL
+- AI/LLM: Gemini (primary), OpenRouter-compatible integration
+- ASR: Faster-Whisper (local FastAPI service in `asr-service`)
+- TTS: VOICEVOX Engine (per-character voice mapping)
+- Real-time Avatar: Live2D model rendering + lip-sync playback
+- DevOps/Runtime: Docker, Docker Compose
+
+## Quick Start
 
 ### Prerequisites
 
-- Node.js (v14+ recommended)
-- npm or yarn
-- Git (latest version recommended)
+- Node.js 18+
+- npm
+- Docker Desktop (or Docker Engine + Compose)
 
-### Installation
+### 1) Install dependencies
 
-**Option 1: Fix SSL Certificate Issue (Recommended)**
-
-1. Update Git to latest version:
-   ```bash
-   git --version
-   # If older than 2.30, update Git
-   ```
-
-2. Configure Git SSL settings:
-   ```bash
-   git config --global http.sslBackend schannel
-   # Or alternatively:
-   git config --global http.sslverify false
-   ```
-
-3. Clone the repository:
-   ```bash
-   git clone https://github.com/aya1101/AyaLearning.git
-   cd AyaLearning/frontend
-   ```
-
-**Option 2: Use SSH Instead of HTTPS**
-
-1. Set up SSH key for GitHub (if not already done)
-2. Clone using SSH:
-   ```bash
-   git clone git@github.com:aya1101/AyaLearning.git
-   cd AyaLearning/frontend
-   ```
-
-**Option 3: Download ZIP**
-
-1. Go to GitHub repository page
-2. Click "Code" → "Download ZIP"
-3. Extract and navigate to project folder
-
-### After Installation
-
-4. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-5. Start the development server:
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
-
-6. Make sure the backend server is running at `http://localhost:3001`.
-
-### Troubleshooting Git SSL Issues
-
-If you continue having SSL issues:
+At workspace root:
 
 ```bash
-# Temporary fix (not recommended for production)
-git config --global http.sslverify false
-
-# Better fix - update certificates
-git config --global http.sslCAinfo "path/to/ca-bundle.crt"
-
-# Reset to default
-git config --global --unset http.sslverify
+npm install
+npm install --prefix backend
+npm install --prefix frontend
 ```
 
-### Project Structure
+### 2) Configure backend env
 
-- `src/App.js`: Main React component, contains all logic and UI.
-- `src/components/ChatBot.js`: ChatBot component.
-- `public/`: Static assets (logo, GIFs, etc.)
+Edit `backend/.env` (minimum required for voice mode):
 
-## Usage
+```bash
+GEMINI_API_KEY=your_key
+GEMINI_MODEL=gemini-2.5-flash
 
-- Select "Học Kanji" or "Học Từ Vựng" to manage Kanji or Vocabulary.
-- Use the search bar to filter items.
-- Add new Kanji or Vocabulary using the forms.
-- Start a quiz to test your knowledge.
-- View your score and feedback GIF after each quiz.
-- Use the Tutor ChatBot for help or conversation.
+TTS_PROVIDER=voicevox
+VOICEVOX_API_URL=http://127.0.0.1:50021
+VOICEVOX_SPEAKER=54
 
-## Customization
+OPENAI_ASR_ENDPOINT=http://localhost:9000/v1/audio/transcriptions
+OPENAI_ASR_MODEL=small
+```
 
-- Update GIFs and images in the `public/` folder.
-- Modify quiz logic or UI in `src/App.js`.
+> `VOICEVOX_SPEAKER` is fallback only. Per-character speaker is configured in `backend/config/kaiwa-characters.json`.
+
+### 3) Start infrastructure services (DB + ASR + VOICEVOX)
+
+One command from workspace root:
+
+```bash
+npm run services:up
+```
+
+Equivalent Docker command:
+
+```bash
+docker compose up -d db asr voicevox
+```
+
+### 4) Start app (frontend + backend)
+
+```bash
+npm run start-dev
+```
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3001`
+
+## Kaiwa Voice Mode
+
+### Character voice mapping (VOICEVOX)
+
+Current mapping in `backend/config/kaiwa-characters.json`:
+
+- `anya` → 春歌ナナ (`voicevoxSpeaker: 54`)
+- `sensei` → 黒沢冴白 (`voicevoxSpeaker: 100`)
+- `yuki` → ユーレイちゃん (`voicevoxSpeaker: 102`)
+
+### Voice APIs
+
+- `POST /api/kaiwa/voice-turn`
+  - Request: `character`, `conversationHistory`, `audioBase64`, `mimeType`
+  - Response: `transcript`, `reply`, `audioUrl`, `visemes`, `timestamp`
+- `GET /api/kaiwa/voice-status`
+  - Returns ASR/TTS provider status and readiness
+
+## Database Schema
+
+- `backend/schema.sql`: development reset schema (destructive)
+- `backend/schema.base.sql`: production-safe base schema (non-destructive)
+
+From `backend/`:
+
+```bash
+npm run db:schema:dev
+npm run db:schema:prod
+```
+
+## Useful Scripts
+
+From workspace root:
+
+- `npm run services:up` → start `db`, `asr`, `voicevox`
+- `npm run services:down` → stop `db`, `asr`, `voicevox`
+- `npm run start-dev` → start frontend + backend
+
+## Troubleshooting
+
+### `npm run services:up` exits with code 1
+
+Check Docker first:
+
+```bash
+docker compose config
+docker compose ps
+docker compose logs asr
+docker compose logs voicevox
+```
+
+If port conflict:
+
+- `5433` (Postgres)
+- `9000` (ASR)
+- `50021` (VOICEVOX)
+
+### VOICEVOX speaker check
+
+```bash
+curl http://localhost:50021/speakers
+```
+
+### Voice status check
+
+```bash
+curl http://localhost:3001/api/kaiwa/voice-status
+```
+
+## Project Structure (high-level)
+
+- `frontend/`: React UI
+- `backend/`: API + Kaiwa orchestration + DB logic
+- `asr-service/`: Faster-Whisper transcription service
+- `docker-compose.yml`: local infra services
 

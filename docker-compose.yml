@@ -1,0 +1,59 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=japanese_learning
+      - DB_PORT=5432
+      - OPENAI_ASR_ENDPOINT=http://asr:9000/v1/audio/transcriptions
+      - OPENAI_ASR_MODEL=small
+      - TTS_PROVIDER=voicevox
+      - VOICEVOX_API_URL=http://voicevox:50021
+    depends_on:
+      - db
+      - asr
+      - voicevox
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: japanese_learning
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  asr:
+    build: ./asr-service
+    ports:
+      - "9000:9000"
+    environment:
+      - ASR_MODEL_SIZE=small
+      - ASR_DEVICE=cpu
+      - ASR_COMPUTE_TYPE=int8
+      - ASR_BEAM_SIZE=1
+      - ASR_VAD_FILTER=true
+
+  voicevox:
+    image: voicevox/voicevox_engine:latest
+    ports:
+      - "50021:50021"
+
+volumes:
+  pgdata:

@@ -69,28 +69,35 @@ router.get('/vocabulary', async (req, res) => {
 
 router.post('/vocabulary', async (req, res) => {
   try {
-    const { word, furigana, meaning, level } = req.body;
-    
+    // Accept both old and new field names for compatibility
+    const {
+      word_jp, word_kana, word_romaji, meaning_vi, meaning_en, part_of_speech, jlpt_level,
+      word, furigana, meaning, level
+    } = req.body;
+
+    // Prefer new fields if present
+    const _word = word_jp || word;
+    const _furigana = word_kana || furigana;
+    const _meaning = meaning_vi || meaning;
+    const _level = jlpt_level || level;
+
     // Validation
-    if (!word || !furigana || !meaning) {
+    if (!_word || !_furigana || !_meaning) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
-    
-    // Insert vocabulary to database
-    // const result = await db.query(
-    //   'INSERT INTO vocabulary (word, furigana, meaning, level) VALUES (?, ?, ?, ?)',
-    //   [word, furigana, meaning, level]
-    // );
-    
-    // Temporary response
+
+    // Temporary response (simulate DB)
     const newVocabulary = {
       id: Date.now(),
-      word,
-      furigana,
-      meaning,
-      level
+      word: _word,
+      furigana: _furigana,
+      romaji: word_romaji || '',
+      meaning: _meaning,
+      meaning_en: meaning_en || '',
+      part_of_speech: part_of_speech || '',
+      level: _level || '',
     };
-    
+
     res.status(201).json(newVocabulary);
   } catch (error) {
     console.error('Error adding vocabulary:', error);

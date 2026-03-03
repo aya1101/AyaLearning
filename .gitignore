@@ -15,6 +15,10 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env
+
+# VS Code local history snapshots (can contain secrets)
+.history/
 
 # Build artifacts
 build/

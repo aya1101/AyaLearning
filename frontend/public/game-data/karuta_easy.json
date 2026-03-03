@@ -1,0 +1,91 @@
+{
+  "metadata": {
+    "game": "karuta",
+    "difficulty": 1,
+    "difficultyName": "Easy (N5)",
+    "cardCount": 10,
+    "lastUpdated": "2026-02-24"
+  },
+  "pairs": [
+    {
+      "id": 1,
+      "reading": "ひかり",
+      "kanji": "光",
+      "meaning": "ánh sáng",
+      "wordFull": "光り",
+      "audio": "/karuta-audio/hikari.mp3"
+    },
+    {
+      "id": 2,
+      "reading": "あさひ",
+      "kanji": "朝日",
+      "meaning": "nắng sáng",
+      "wordFull": "朝日",
+      "audio": "/karuta-audio/asahi.mp3"
+    },
+    {
+      "id": 3,
+      "reading": "つよい",
+      "kanji": "強い",
+      "meaning": "mạnh",
+      "wordFull": "強い",
+      "audio": "/karuta-audio/tsuyoi.mp3"
+    },
+    {
+      "id": 4,
+      "reading": "うつくしい",
+      "kanji": "美しい",
+      "meaning": "xinh đẹp",
+      "wordFull": "美しい",
+      "audio": "/karuta-audio/utsukushii.mp3"
+    },
+    {
+      "id": 5,
+      "reading": "なつ",
+      "kanji": "夏",
+      "meaning": "mùa hè",
+      "wordFull": "夏",
+      "audio": "/karuta-audio/natsu.mp3"
+    },
+    {
+      "id": 6,
+      "reading": "たのしい",
+      "kanji": "楽しい",
+      "meaning": "vui vẻ",
+      "wordFull": "楽しい",
+      "audio": "/karuta-audio/tanoshii.mp3"
+    },
+    {
+      "id": 7,
+      "reading": "やさしい",
+      "kanji": "優しい",
+      "meaning": "hiền lành",
+      "wordFull": "優しい",
+      "audio": "/karuta-audio/yasashii.mp3"
+    },
+    {
+      "id": 8,
+      "reading": "ほし",
+      "kanji": "星",
+      "meaning": "sao",
+      "wordFull": "星",
+      "audio": "/karuta-audio/hoshi.mp3"
+    },
+    {
+      "id": 9,
+      "reading": "エキサイティング",
+      "kanji": "興奮",
+      "meaning": "thú vị",
+      "wordFull": "興奮しました",
+      "audio": "/karuta-audio/exciting.mp3"
+    },
+    {
+      "id": 10,
+      "reading": "あいアイ",
+      "kanji": "愛",
+      "meaning": "tình yêu",
+      "wordFull": "愛しい",
+      "audio": "/karuta-audio/ai.mp3"
+    }
+  ]
+}

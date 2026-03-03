@@ -1,0 +1,867 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "",
+			"Name": "Angle X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "",
+			"Name": "Angle Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "",
+			"Name": "Angle Z"
+		},
+		{
+			"Id": "Param46",
+			"GroupId": "",
+			"Name": "X"
+		},
+		{
+			"Id": "ParamEyeBallX",
+			"GroupId": "",
+			"Name": "Eyeball X"
+		},
+		{
+			"Id": "ParamEyeBallY",
+			"GroupId": "",
+			"Name": "Eyeball Y"
+		},
+		{
+			"Id": "ParamMouthForm",
+			"GroupId": "",
+			"Name": "Mouth Form"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "Mouth Open"
+		},
+		{
+			"Id": "ParamBodyAngleX",
+			"GroupId": "",
+			"Name": "Body X"
+		},
+		{
+			"Id": "ParamBodyAngleY",
+			"GroupId": "",
+			"Name": "Body Y"
+		},
+		{
+			"Id": "ParamBodyAngleZ",
+			"GroupId": "",
+			"Name": "Body Z"
+		},
+		{
+			"Id": "ParamBreath",
+			"GroupId": "",
+			"Name": "Breath"
+		},
+		{
+			"Id": "ParamCheek",
+			"GroupId": "",
+			"Name": "Cheek"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"GroupId": "ParamGroup2",
+			"Name": "EyeL Open"
+		},
+		{
+			"Id": "ParamEyeLSmile",
+			"GroupId": "ParamGroup2",
+			"Name": "EyeL Smile"
+		},
+		{
+			"Id": "Param4",
+			"GroupId": "ParamGroup2",
+			"Name": "IRIS ROTATE L"
+		},
+		{
+			"Id": "Param5",
+			"GroupId": "ParamGroup2",
+			"Name": "TL LSH L MOVE"
+		},
+		{
+			"Id": "Param6",
+			"GroupId": "ParamGroup2",
+			"Name": "B LASH L MOVE"
+		},
+		{
+			"Id": "ParamBrowLX",
+			"GroupId": "ParamGroup2",
+			"Name": "BrowL X"
+		},
+		{
+			"Id": "ParamBrowLY",
+			"GroupId": "ParamGroup2",
+			"Name": "BrowL Y"
+		},
+		{
+			"Id": "ParamBrowLAngle",
+			"GroupId": "ParamGroup2",
+			"Name": "BrowL Angle"
+		},
+		{
+			"Id": "ParamBrowLForm",
+			"GroupId": "ParamGroup2",
+			"Name": "BrowL Form"
+		},
+		{
+			"Id": "Param42",
+			"GroupId": "ParamGroup2",
+			"Name": "EYE L DEFORM X"
+		},
+		{
+			"Id": "Param43",
+			"GroupId": "ParamGroup2",
+			"Name": "EYE L DEFORM Y"
+		},
+		{
+			"Id": "Param83",
+			"GroupId": "ParamGroup2",
+			"Name": "eyeshine L"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"GroupId": "ParamGroup",
+			"Name": "EyeR Open"
+		},
+		{
+			"Id": "ParamEyeRSmile",
+			"GroupId": "ParamGroup",
+			"Name": "EyeR Smile"
+		},
+		{
+			"Id": "Param",
+			"GroupId": "ParamGroup",
+			"Name": "IRIS ROTATE"
+		},
+		{
+			"Id": "Param2",
+			"GroupId": "ParamGroup",
+			"Name": "TL LSH R MOVE"
+		},
+		{
+			"Id": "Param3",
+			"GroupId": "ParamGroup",
+			"Name": "B LASH R MOVE"
+		},
+		{
+			"Id": "ParamBrowRX",
+			"GroupId": "ParamGroup",
+			"Name": "BrowR X"
+		},
+		{
+			"Id": "ParamBrowRY",
+			"GroupId": "ParamGroup",
+			"Name": "BrowR Y"
+		},
+		{
+			"Id": "ParamBrowRAngle",
+			"GroupId": "ParamGroup",
+			"Name": "BrowR Angle"
+		},
+		{
+			"Id": "ParamBrowRForm",
+			"GroupId": "ParamGroup",
+			"Name": "BrowR Form"
+		},
+		{
+			"Id": "Param44",
+			"GroupId": "ParamGroup",
+			"Name": "EYE L DEFORM X"
+		},
+		{
+			"Id": "Param45",
+			"GroupId": "ParamGroup",
+			"Name": "EYE L DEFORM Y"
+		},
+		{
+			"Id": "Param84",
+			"GroupId": "ParamGroup",
+			"Name": "Eyeshine R Deform"
+		},
+		{
+			"Id": "BACKCOATX",
+			"GroupId": "ParamGroup5",
+			"Name": "BACK COAT X"
+		},
+		{
+			"Id": "BACKCOATY",
+			"GroupId": "ParamGroup5",
+			"Name": "BACK COAT Y"
+		},
+		{
+			"Id": "BACKCOATCURVE",
+			"GroupId": "ParamGroup5",
+			"Name": "BACK COAT CURVE"
+		},
+		{
+			"Id": "SLEEVEX",
+			"GroupId": "ParamGroup5",
+			"Name": "SLEEVE X"
+		},
+		{
+			"Id": "SLEEVEY",
+			"GroupId": "ParamGroup5",
+			"Name": "SLEEVE Y"
+		},
+		{
+			"Id": "SLEEVECURVE",
+			"GroupId": "ParamGroup5",
+			"Name": "SLEVE CURVE"
+		},
+		{
+			"Id": "BSCTAGCURVE",
+			"GroupId": "ParamGroup5",
+			"Name": "BSC TAG CURVE"
+		},
+		{
+			"Id": "Param85",
+			"GroupId": "ParamGroup5",
+			"Name": "BSC TAG X"
+		},
+		{
+			"Id": "Param86",
+			"GroupId": "ParamGroup5",
+			"Name": "BSC TAG Y"
+		},
+		{
+			"Id": "Param57",
+			"GroupId": "ParamGroup5",
+			"Name": "TBL TAG 1 X"
+		},
+		{
+			"Id": "Param58",
+			"GroupId": "ParamGroup5",
+			"Name": "TBL TAG 1 Y"
+		},
+		{
+			"Id": "Param59",
+			"GroupId": "ParamGroup5",
+			"Name": "TBL TAG 1 CURVE"
+		},
+		{
+			"Id": "Param60",
+			"GroupId": "ParamGroup5",
+			"Name": "TBL TAG 2 X"
+		},
+		{
+			"Id": "Param61",
+			"GroupId": "ParamGroup5",
+			"Name": "TBL TAG 2 Y"
+		},
+		{
+			"Id": "Param62",
+			"GroupId": "ParamGroup5",
+			"Name": "TBL TAG 2 CURVE"
+		},
+		{
+			"Id": "Param63",
+			"GroupId": "ParamGroup5",
+			"Name": "TBL X"
+		},
+		{
+			"Id": "Param64",
+			"GroupId": "ParamGroup5",
+			"Name": "TBL Y"
+		},
+		{
+			"Id": "TBRX",
+			"GroupId": "ParamGroup5",
+			"Name": "TBR X"
+		},
+		{
+			"Id": "TBRY",
+			"GroupId": "ParamGroup5",
+			"Name": "TBR Y"
+		},
+		{
+			"Id": "Param65",
+			"GroupId": "ParamGroup5",
+			"Name": "CT L X"
+		},
+		{
+			"Id": "Param66",
+			"GroupId": "ParamGroup5",
+			"Name": "CT L Y"
+		},
+		{
+			"Id": "CTRX",
+			"GroupId": "ParamGroup5",
+			"Name": "CT R X"
+		},
+		{
+			"Id": "CTRY",
+			"GroupId": "ParamGroup5",
+			"Name": "CT R Y"
+		},
+		{
+			"Id": "Param67",
+			"GroupId": "ParamGroup5",
+			"Name": "TBR TAG 1 X"
+		},
+		{
+			"Id": "Param68",
+			"GroupId": "ParamGroup5",
+			"Name": "TBR TAG 1 Y"
+		},
+		{
+			"Id": "Param71",
+			"GroupId": "ParamGroup5",
+			"Name": "TBR TAG 1 CRUVE"
+		},
+		{
+			"Id": "Param69",
+			"GroupId": "ParamGroup5",
+			"Name": "TBR TAG 2 X"
+		},
+		{
+			"Id": "Param70",
+			"GroupId": "ParamGroup5",
+			"Name": "TBR TAG 2 Y"
+		},
+		{
+			"Id": "Param72",
+			"GroupId": "ParamGroup5",
+			"Name": "TBR TAG 2  CURVE"
+		},
+		{
+			"Id": "Param73",
+			"GroupId": "ParamGroup5",
+			"Name": "TOP COAT CURVE"
+		},
+		{
+			"Id": "Param74",
+			"GroupId": "ParamGroup5",
+			"Name": "BOT COAT CURVE"
+		},
+		{
+			"Id": "Param75",
+			"GroupId": "ParamGroup5",
+			"Name": "sc shine x"
+		},
+		{
+			"Id": "Param76",
+			"GroupId": "ParamGroup5",
+			"Name": "sc shine y"
+		},
+		{
+			"Id": "Param9",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH 1 X"
+		},
+		{
+			"Id": "Param20",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH 1 Y"
+		},
+		{
+			"Id": "Param10",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH 1 CURVE"
+		},
+		{
+			"Id": "Param11",
+			"GroupId": "ParamGroup4",
+			"Name": "H2 X"
+		},
+		{
+			"Id": "Param21",
+			"GroupId": "ParamGroup4",
+			"Name": "H2 Y"
+		},
+		{
+			"Id": "Param12",
+			"GroupId": "ParamGroup4",
+			"Name": "H2 CURVE"
+		},
+		{
+			"Id": "Param13",
+			"GroupId": "ParamGroup4",
+			"Name": "H1 X"
+		},
+		{
+			"Id": "Param22",
+			"GroupId": "ParamGroup4",
+			"Name": "H1 Y"
+		},
+		{
+			"Id": "Param14",
+			"GroupId": "ParamGroup4",
+			"Name": "H1 CURVE"
+		},
+		{
+			"Id": "Param15",
+			"GroupId": "ParamGroup4",
+			"Name": "MB X"
+		},
+		{
+			"Id": "Param23",
+			"GroupId": "ParamGroup4",
+			"Name": "MB Y"
+		},
+		{
+			"Id": "Param16",
+			"GroupId": "ParamGroup4",
+			"Name": "MB CURVE"
+		},
+		{
+			"Id": "Param17",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH X"
+		},
+		{
+			"Id": "Param18",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH Y"
+		},
+		{
+			"Id": "Param19",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH CURVE"
+		},
+		{
+			"Id": "Param24",
+			"GroupId": "ParamGroup4",
+			"Name": "AHOGE X"
+		},
+		{
+			"Id": "Param25",
+			"GroupId": "ParamGroup4",
+			"Name": "AHOGE Y"
+		},
+		{
+			"Id": "Param26",
+			"GroupId": "ParamGroup4",
+			"Name": "AHOGE CURVE"
+		},
+		{
+			"Id": "Param27",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH 1 X"
+		},
+		{
+			"Id": "Param28",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH 1 Y"
+		},
+		{
+			"Id": "Param29",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH 1 CURVE"
+		},
+		{
+			"Id": "Param30",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH 3 X"
+		},
+		{
+			"Id": "Param31",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH 3 Y"
+		},
+		{
+			"Id": "Param32",
+			"GroupId": "ParamGroup4",
+			"Name": "LSH 3 CURVE"
+		},
+		{
+			"Id": "Param33",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH X"
+		},
+		{
+			"Id": "Param34",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH Y"
+		},
+		{
+			"Id": "Param35",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH CRUVE"
+		},
+		{
+			"Id": "Param36",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH 2 X"
+		},
+		{
+			"Id": "Param37",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH 2 Y"
+		},
+		{
+			"Id": "Param38",
+			"GroupId": "ParamGroup4",
+			"Name": "RSH 2 CURVE"
+		},
+		{
+			"Id": "Param39",
+			"GroupId": "ParamGroup4",
+			"Name": "BH X"
+		},
+		{
+			"Id": "Param40",
+			"GroupId": "ParamGroup4",
+			"Name": "BH Y"
+		},
+		{
+			"Id": "Param41",
+			"GroupId": "ParamGroup4",
+			"Name": "BH CURVE"
+		},
+		{
+			"Id": "Param7",
+			"GroupId": "ParamGroup3",
+			"Name": "EAR CHAIN MOVE X"
+		},
+		{
+			"Id": "Param8",
+			"GroupId": "ParamGroup3",
+			"Name": "EAR CHAIN MOVE Y"
+		},
+		{
+			"Id": "Param47",
+			"GroupId": "ParamGroup3",
+			"Name": "ZIP"
+		},
+		{
+			"Id": "Param48",
+			"GroupId": "ParamGroup3",
+			"Name": "BAG TAG X"
+		},
+		{
+			"Id": "Param49",
+			"GroupId": "ParamGroup3",
+			"Name": "BAG TAG Y"
+		},
+		{
+			"Id": "Param77",
+			"GroupId": "ParamGroup3",
+			"Name": "BAG TAG CURVE"
+		},
+		{
+			"Id": "Param50",
+			"GroupId": "ParamGroup3",
+			"Name": "BAG X"
+		},
+		{
+			"Id": "Param51",
+			"GroupId": "ParamGroup3",
+			"Name": "BAG Y"
+		},
+		{
+			"Id": "Param52",
+			"GroupId": "ParamGroup3",
+			"Name": "BELT X"
+		},
+		{
+			"Id": "Param53",
+			"GroupId": "ParamGroup3",
+			"Name": "BELT Y"
+		},
+		{
+			"Id": "Param54",
+			"GroupId": "ParamGroup6",
+			"Name": "hand wave'"
+		},
+		{
+			"Id": "Param55",
+			"GroupId": "ParamGroup6",
+			"Name": "hand wave toggle"
+		},
+		{
+			"Id": "Param56",
+			"GroupId": "ParamGroup6",
+			"Name": "coat toggle"
+		},
+		{
+			"Id": "gloom",
+			"GroupId": "ParamGroup6",
+			"Name": "Gloom"
+		},
+		{
+			"Id": "stareyestoggle",
+			"GroupId": "ParamGroup6",
+			"Name": "star eyes toggle"
+		},
+		{
+			"Id": "serR",
+			"GroupId": "ParamGroup6",
+			"Name": "star eyes rotate R"
+		},
+		{
+			"Id": "serL",
+			"GroupId": "ParamGroup6",
+			"Name": "star eyes rotate L"
+		},
+		{
+			"Id": "happysparkle",
+			"GroupId": "ParamGroup6",
+			"Name": "Happy Sparkle toggle"
+		},
+		{
+			"Id": "Param78",
+			"GroupId": "ParamGroup6",
+			"Name": "Cry Toggle"
+		},
+		{
+			"Id": "Param79",
+			"GroupId": "ParamGroup6",
+			"Name": "cry loop L 1"
+		},
+		{
+			"Id": "Param82",
+			"GroupId": "ParamGroup6",
+			"Name": "cry loop L 2"
+		},
+		{
+			"Id": "Param80",
+			"GroupId": "ParamGroup6",
+			"Name": "cry loop R 1"
+		},
+		{
+			"Id": "Param81",
+			"GroupId": "ParamGroup6",
+			"Name": "cry loop R 2"
+		}
+	],
+	"ParameterGroups": [
+		{
+			"Id": "ParamGroup2",
+			"GroupId": "",
+			"Name": "EYE L"
+		},
+		{
+			"Id": "ParamGroup",
+			"GroupId": "",
+			"Name": "EYE R"
+		},
+		{
+			"Id": "ParamGroup5",
+			"GroupId": "",
+			"Name": "CLOTHES"
+		},
+		{
+			"Id": "ParamGroup4",
+			"GroupId": "",
+			"Name": "HAIR"
+		},
+		{
+			"Id": "ParamGroup3",
+			"GroupId": "",
+			"Name": "ACC"
+		},
+		{
+			"Id": "ParamGroup6",
+			"GroupId": "",
+			"Name": "Expressions"
+		}
+	],
+	"Parts": [
+		{
+			"Id": "finished",
+			"Name": "finished"
+		},
+		{
+			"Id": "Part",
+			"Name": "arm wave"
+		},
+		{
+			"Id": "HAIR",
+			"Name": "HAIR"
+		},
+		{
+			"Id": "expressions",
+			"Name": "expressions"
+		},
+		{
+			"Id": "HEAD",
+			"Name": "HEAD"
+		},
+		{
+			"Id": "BODYY",
+			"Name": "BODYY"
+		},
+		{
+			"Id": "Part2",
+			"Name": "SPARKLE"
+		},
+		{
+			"Id": "EYES",
+			"Name": "EYES"
+		},
+		{
+			"Id": "NOSE",
+			"Name": "NOSE"
+		},
+		{
+			"Id": "MOUTH",
+			"Name": "MOUTH"
+		},
+		{
+			"Id": "HEAD2",
+			"Name": "HEAD"
+		},
+		{
+			"Id": "EARS",
+			"Name": "EARS"
+		},
+		{
+			"Id": "COAT",
+			"Name": "COAT"
+		},
+		{
+			"Id": "BODY",
+			"Name": "BODY"
+		},
+		{
+			"Id": "Part6",
+			"Name": "EYES L TRUE"
+		},
+		{
+			"Id": "Part3",
+			"Name": "EYES R"
+		},
+		{
+			"Id": "Part4",
+			"Name": "T BREAST R"
+		},
+		{
+			"Id": "Part5",
+			"Name": "T BREAST L"
+		}
+	],
+	"CombinedParameters": [
+		[
+			"ParamAngleX",
+			"ParamAngleY"
+		],
+		[
+			"ParamEyeBallX",
+			"ParamEyeBallY"
+		],
+		[
+			"ParamMouthForm",
+			"ParamMouthOpenY"
+		],
+		[
+			"ParamBodyAngleX",
+			"ParamBodyAngleY"
+		],
+		[
+			"Param44",
+			"Param45"
+		],
+		[
+			"BACKCOATX",
+			"BACKCOATY"
+		],
+		[
+			"Param85",
+			"Param86"
+		],
+		[
+			"Param57",
+			"Param58"
+		],
+		[
+			"Param60",
+			"Param61"
+		],
+		[
+			"Param63",
+			"Param64"
+		],
+		[
+			"TBRX",
+			"TBRY"
+		],
+		[
+			"Param65",
+			"Param66"
+		],
+		[
+			"CTRX",
+			"CTRY"
+		],
+		[
+			"Param75",
+			"Param76"
+		],
+		[
+			"Param9",
+			"Param20"
+		],
+		[
+			"Param11",
+			"Param21"
+		],
+		[
+			"Param13",
+			"Param22"
+		],
+		[
+			"Param15",
+			"Param23"
+		],
+		[
+			"Param17",
+			"Param18"
+		],
+		[
+			"Param24",
+			"Param25"
+		],
+		[
+			"Param27",
+			"Param28"
+		],
+		[
+			"Param30",
+			"Param31"
+		],
+		[
+			"Param33",
+			"Param34"
+		],
+		[
+			"Param36",
+			"Param37"
+		],
+		[
+			"Param39",
+			"Param40"
+		],
+		[
+			"Param7",
+			"Param8"
+		],
+		[
+			"Param48",
+			"Param49"
+		],
+		[
+			"Param50",
+			"Param51"
+		],
+		[
+			"Param52",
+			"Param53"
+		],
+		[
+			"Param79",
+			"Param82"
+		],
+		[
+			"Param80",
+			"Param81"
+		]
+	]
+}

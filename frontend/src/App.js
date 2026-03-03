@@ -1,966 +1,462 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatBot from './components/ChatBot';
-
-// submodule: shuffleArray
-const shuffleArray = (array) => {
-  let currentIndex = array.length, randomIndex;
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = 
-      [array[randomIndex], array[currentIndex]];
-  }
-  return array;
-};
-
-// =================================================================
-// component: Quiz End Screen
-// =================================================================
-const QuizEndScreen = ({ score, total, imageSrc, imageAlt, onRestart, onGoBack }) => {
-  return (
-    <div className="p-6 bg-white rounded-lg shadow-xl text-center max-w-md mx-auto my-8">
-      <h2 className="text-3xl font-bold mb-4 text-gray-800">End Game!</h2>
-      <p className="text-2xl font-semibold mb-6 text-blue-700">
-        ✔ Đúng <span className="text-green-600">{score}</span> / <span className="text-red-500">{total}</span> câu.
-      </p>
-      
-      {imageSrc && (
-        <div className="mb-6">
-          <img 
-            src={imageSrc} 
-            alt={imageAlt} 
-            className="mx-auto rounded-lg shadow-md max-w-full h-auto"
-          />
-        </div>
-      )}
-      
-      <div className="flex flex-col space-y-4">
-        <button
-          onClick={onRestart}
-          className="bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150 ease-in-out text-lg font-semibold"
-        >
-          Làm lại
-        </button>
-        <button
-          onClick={onGoBack}
-          className="bg-gray-500 text-white py-3 px-6 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-150 ease-in-out text-lg font-semibold"
-        >
-          Về Home
-        </button>
-      </div>
-    </div>
-  );
-};
-
-
-// =================================================================
-// component: Pagination (phân trang)
-// =================================================================
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  if (totalPages <= 1) return null;
-
-  const handlePrev = () => onPageChange(p => Math.max(p - 1, 1));
-  const handleNext = () => onPageChange(p => Math.min(p + 1, totalPages));
-
-  return (
-    <div className="mt-6 flex justify-center items-center space-x-4">
-      <button onClick={handlePrev} disabled={currentPage === 1} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
-        Trước
-      </button>
-      <span className="font-semibold text-gray-600">
-        Trang {currentPage} / {totalPages}
-      </span>
-      <button onClick={handleNext} disabled={currentPage === totalPages} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed">
-        Sau
-      </button>
-    </div>
-  );
-};
-
-
-// =================================================================
-// component: màn hình chính (kanji & từ vựng)
-// =================================================================
-// -- Kanji Section --
-const KanjiSection = ({ kanjiList, newKanji, handleNewKanjiChange, handleAddKanji, onStartQuiz, currentPage, onPageChange, itemsPerPage, onEditKanji, onDeleteKanji, editingKanji, onUpdateKanji, onCancelEdit }) => {
-    const totalPages = Math.ceil(kanjiList.length / itemsPerPage);
-    const paginatedKanji = kanjiList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-    return (
-        <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">漢字を勉強</h2>
-            <div className="mb-8 p-4 border border-gray-200 rounded-lg">
-                <h3 className="text-xl font-semibold mb-3 text-gray-700">Add new</h3>
-                <form onSubmit={handleAddKanji} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input name="kanji_char" value={newKanji.kanji_char} onChange={handleNewKanjiChange} placeholder="Chữ Kanji" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2" required />
-                    <input name="han_tu" value={newKanji.han_tu} onChange={handleNewKanjiChange} placeholder="Hán tự" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2" required />
-                    <input name="onyomi" value={newKanji.onyomi} onChange={handleNewKanjiChange} placeholder="On'yomi" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2" />
-                    <input name="kunyomi" value={newKanji.kunyomi} onChange={handleNewKanjiChange} placeholder="Kun'yomi" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2" />
-                    <input name="meaning" value={newKanji.meaning} onChange={handleNewKanjiChange} placeholder="Nghĩa" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2" required />
-                    <select name="level" value={newKanji.level} onChange={handleNewKanjiChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2">
-                        <option value="N5">N5</option>
-                        <option value="N4">N4</option>
-                        <option value="N3">N3</option>
-                        <option value="N2">N2</option>
-                        <option value="N1">N1</option>
-                    </select>
-                    <div className="md:col-span-2">
-                        <button type="submit" className="w-full bg-[#FFD8D8] text-slate-900 font-semibold py-2 px-4 rounded-md hover:bg-red-200 transition-colors">Thêm Kanji</button>
-                    </div>
-                </form>
-            </div>
-            <h3 className="text-xl font-semibold mb-3 text-gray-700">List Kanji</h3>
-            
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kanji</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hán tự</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">On'yomi</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kun'yomi</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nghĩa</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cấp độ</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {paginatedKanji.map((kanji) => (
-                            <tr key={kanji.id}>
-                                {editingKanji && editingKanji.id === kanji.id ? (
-                                    <>
-                                        <td className="px-6 py-4"><input value={editingKanji.kanji_char} onChange={(e) => onEditKanji({...editingKanji, kanji_char: e.target.value})} className="w-full p-1 border rounded" /></td>
-                                        <td className="px-6 py-4"><input value={editingKanji.han_tu} onChange={(e) => onEditKanji({...editingKanji, han_tu: e.target.value})} className="w-full p-1 border rounded" /></td>
-                                        <td className="px-6 py-4"><input value={editingKanji.onyomi} onChange={(e) => onEditKanji({...editingKanji, onyomi: e.target.value})} className="w-full p-1 border rounded" /></td>
-                                        <td className="px-6 py-4"><input value={editingKanji.kunyomi} onChange={(e) => onEditKanji({...editingKanji, kunyomi: e.target.value})} className="w-full p-1 border rounded" /></td>
-                                        <td className="px-6 py-4"><input value={editingKanji.meaning} onChange={(e) => onEditKanji({...editingKanji, meaning: e.target.value})} className="w-full p-1 border rounded" /></td>
-                                        <td className="px-6 py-4">
-                                            <select value={editingKanji.level} onChange={(e) => onEditKanji({...editingKanji, level: e.target.value})} className="w-full p-1 border rounded">
-                                                <option value="N5">N5</option>
-                                                <option value="N4">N4</option>
-                                                <option value="N3">N3</option>
-                                                <option value="N2">N2</option>
-                                                <option value="N1">N1</option>
-                                            </select>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex space-x-2">
-                                                <button onClick={() => onUpdateKanji(editingKanji)} className="bg-green-500 text-white px-2 py-1 rounded text-sm hover:bg-green-600">Lưu</button>
-                                                <button onClick={onCancelEdit} className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600">Hủy</button>
-                                            </div>
-                                        </td>
-                                    </>
-                                ) : (
-                                    <>
-                                        <td className="px-6 py-4">{kanji.kanji_char}</td>
-                                        <td className="px-6 py-4">{kanji.han_tu}</td>
-                                        <td className="px-6 py-4">{kanji.onyomi}</td>
-                                        <td className="px-6 py-4">{kanji.kunyomi}</td>
-                                        <td className="px-6 py-4">{kanji.meaning}</td>
-                                        <td className="px-6 py-4">{kanji.level}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex space-x-2">
-                                                <button onClick={() => onEditKanji(kanji)} className="bg-blue-500 text-white p-2 rounded text-sm hover:bg-blue-600 transition-colors" title="Sửa">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                </button>
-                                                <button onClick={() => onDeleteKanji(kanji.id)} className="bg-red-500 text-white p-2 rounded text-sm hover:bg-red-600 transition-colors" title="Xóa">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </>
-                                )}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
-            <div className="mt-6 text-center">
-                <button onClick={onStartQuiz} className="bg-[#093FB4] text-white py-2 px-4 rounded-md hover:bg-[#072f8a] transition-colors">
-                    練習しましょう！(Quiz)
-                </button>
-            </div>
-        </div>
-    );
-};
-
-// -- Vocabulary Section --
-const VocabularySection = ({ vocabularyList, newVocabulary, handleNewVocabularyChange, handleAddVocabulary, onStartQuiz, currentPage, onPageChange, itemsPerPage, onEditVocabulary, onDeleteVocabulary, editingVocabulary, onUpdateVocabulary, onCancelEdit }) => {
-    const totalPages = Math.ceil(vocabularyList.length / itemsPerPage);
-    const paginatedVocabulary = vocabularyList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-    return (
-         <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Tanbou</h2>
-            <div className="mb-8 p-4 border border-gray-200 rounded-lg">
-                <h3 className="text-xl font-semibold mb-3 text-gray-700">Add new</h3>
-                <form onSubmit={handleAddVocabulary} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <input name="word" value={newVocabulary.word} onChange={handleNewVocabularyChange} placeholder="Từ vựng" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2" required />
-                     <input name="furigana" value={newVocabulary.furigana} onChange={handleNewVocabularyChange} placeholder="Furigana" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2" required />
-                     <input name="meaning" value={newVocabulary.meaning} onChange={handleNewVocabularyChange} placeholder="Nghĩa" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2" required />
-                     <select name="level" value={newVocabulary.level} onChange={handleNewVocabularyChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 p-2">
-                        <option value="N5">N5</option>
-                        <option value="N4">N4</option>
-                        <option value="N3">N3</option>
-                        <option value="N2">N2</option>
-                        <option value="N1">N1</option>
-                    </select>
-                    <div className="md:col-span-2">
-                        <button type="submit" className="w-full bg-[#FFD8D8] text-slate-900 font-semibold py-2 px-4 rounded-md hover:bg-red-200 transition-colors">Thêm Từ Vựng</button>
-                    </div>
-                </form>
-            </div>
-            <h3 className="text-xl font-semibold mb-3 text-gray-700">Goi</h3>
-            
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">探訪</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Furigana</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">意味</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Level</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {paginatedVocabulary.map((vocab) => (
-                            <tr key={vocab.id}>
-                                {editingVocabulary && editingVocabulary.id === vocab.id ? (
-                                    <>
-                                        <td className="px-6 py-4"><input value={editingVocabulary.word} onChange={(e) => onEditVocabulary({...editingVocabulary, word: e.target.value})} className="w-full p-1 border rounded" /></td>
-                                        <td className="px-6 py-4"><input value={editingVocabulary.furigana} onChange={(e) => onEditVocabulary({...editingVocabulary, furigana: e.target.value})} className="w-full p-1 border rounded" /></td>
-                                        <td className="px-6 py-4"><input value={editingVocabulary.meaning} onChange={(e) => onEditVocabulary({...editingVocabulary, meaning: e.target.value})} className="w-full p-1 border rounded" /></td>
-                                        <td className="px-6 py-4">
-                                            <select value={editingVocabulary.level} onChange={(e) => onEditVocabulary({...editingVocabulary, level: e.target.value})} className="w-full p-1 border rounded">
-                                                <option value="N5">N5</option>
-                                                <option value="N4">N4</option>
-                                                <option value="N3">N3</option>
-                                                <option value="N2">N2</option>
-                                                <option value="N1">N1</option>
-                                            </select>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex space-x-2">
-                                                <button onClick={() => onUpdateVocabulary(editingVocabulary)} className="bg-green-500 text-white px-2 py-1 rounded text-sm hover:bg-green-600">Lưu</button>
-                                                <button onClick={onCancelEdit} className="bg-gray-500 text-white px-2 py-1 rounded text-sm hover:bg-gray-600">Hủy</button>
-                                            </div>
-                                        </td>
-                                    </>
-                                ) : (
-                                    <>
-                                        <td className="px-6 py-4">{vocab.word}</td>
-                                        <td className="px-6 py-4">{vocab.furigana}</td>
-                                        <td className="px-6 py-4">{vocab.meaning}</td>
-                                        <td className="px-6 py-4">{vocab.level}</td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex space-x-2">
-                                                <button onClick={() => onEditVocabulary(vocab)} className="bg-blue-500 text-white p-2 rounded text-sm hover:bg-blue-600 transition-colors" title="Sửa">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                </button>
-                                                <button onClick={() => onDeleteVocabulary(vocab.id)} className="bg-red-500 text-white p-2 rounded text-sm hover:bg-red-600 transition-colors" title="Xóa">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </>
-                                )}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
-            <div className="mt-6 text-center">
-                <button onClick={onStartQuiz} className="bg-[#093FB4] text-white py-2 px-4 rounded-md hover:bg-[#072f8a] transition-colors">
-                    勉強初めて！
-                </button>
-            </div>
-        </div>
-    );
-};
-
-// =================================================================
-// component Quiz
-// =================================================================
-
-// -- Kanji Quiz Section --
-const KanjiQuizSection = ({ kanjiList, onQuizEnd, onGoBack }) => {
-    const [currentQuestion, setCurrentQuestion] = useState(null);
-    const [options, setOptions] = useState([]);
-    const [quizType, setQuizType] = useState('');
-    const [feedback, setFeedback] = useState('');
-    const [correctAnswers, setCorrectAnswers] = useState(0);
-    const [totalQuestions, setTotalQuestions] = useState(0);
-
-    const generateQuestion = (type) => {
-        if (kanjiList.length < 4) return;
-        const correctKanji = kanjiList[Math.floor(Math.random() * kanjiList.length)];
-        let questionText = '', correctAnswer = '', incorrectOptions = [];
-
-        switch (type) {
-            case 'kanji-han_tu':
-                questionText = correctKanji.kanji_char;
-                correctAnswer = correctKanji.han_tu;
-                incorrectOptions = kanjiList.filter(k => k.id !== correctKanji.id).map(k => k.han_tu);
-                break;
-            case 'han_tu-kanji':
-                questionText = correctKanji.han_tu;
-                correctAnswer = correctKanji.kanji_char;
-                incorrectOptions = kanjiList.filter(k => k.id !== correctKanji.id).map(k => k.kanji_char);
-                break;
-            default: return;
-        }
-
-        const uniqueIncorrectOptions = Array.from(new Set(incorrectOptions)).filter(opt => opt && opt !== correctAnswer);
-        const finalOptions = shuffleArray([...shuffleArray(uniqueIncorrectOptions).slice(0, 3), correctAnswer]);
-
-        setCurrentQuestion({ question: questionText, correctAnswer: correctAnswer });
-        setOptions(finalOptions);
-    };
-
-    const startQuiz = (type) => {
-        if (kanjiList.length < 4) {
-            setFeedback('Cần ít nhất 4 Kanji để bắt đầu quiz.');
-            return;
-        }
-        setQuizType(type);
-        setCorrectAnswers(0);
-        setTotalQuestions(0);
-        setFeedback('');
-        generateQuestion(type);
-    };
-
-    const handleAnswer = (selectedAnswer) => {
-        setTotalQuestions(prev => prev + 1);
-        if (selectedAnswer === currentQuestion.correctAnswer) {
-            setCorrectAnswers(prev => prev + 1);
-            setFeedback('🎉ビンゴ!');
-        } else {
-            setFeedback(`ちょっと. Đáp án đúng là: ${currentQuestion.correctAnswer}`);
-        }
-        setTimeout(() => {
-            setFeedback('');
-            generateQuestion(quizType);
-        }, 1500);
-    };
-
-    const handleStopQuiz = () => {
-        onQuizEnd(correctAnswers, totalQuestions, quizType);
-    }
-    
-    if (!quizType) {
-        return (
-            <div className="p-4 bg-white rounded-lg shadow-md text-center">
-                <h2 className="text-2xl font-bold mb-4 text-gray-800">Chọn loại Quiz Kanji</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button onClick={() => startQuiz('kanji-han_tu')} className="bg-[#093FB4] text-white py-3 px-6 rounded-md hover:bg-[#072f8a] transition-colors">Kanji → Hán tự</button>
-                    <button onClick={() => startQuiz('han_tu-kanji')} className="bg-[#093FB4] text-white py-3 px-6 rounded-md hover:bg-[#072f8a] transition-colors">Hán tự → Kanji</button>
-                </div>
-                {feedback && <p className="mt-4 text-red-500 font-medium">{feedback}</p>}
-                 <button onClick={onGoBack} className="mt-6 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600">Quay lại</button>
-            </div>
-        );
-    }
-
-    if (!currentQuestion) {
-        return (
-            <div className="p-4 bg-white rounded-lg shadow-md text-center">
-                <p className="text-lg text-gray-700">Đang chuẩn bị câu hỏi...</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="p-4 bg-white rounded-lg shadow-md text-center">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">{currentQuestion.question}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {options.map((option, index) => (
-                    <button key={index} onClick={() => handleAnswer(option)} className="bg-[#FFD8D8] text-slate-900 py-3 px-6 rounded-md hover:bg-red-200 text-lg font-semibold transition-colors">
-                        {option}
-                    </button>
-                ))}
-            </div>
-            {feedback && (
-                <p className={`mt-4 text-xl font-bold ${feedback.includes('🎉ビンゴ!') ? 'text-green-600' : 'text-red-600'}`}>{feedback}</p>
-            )}
-            <button onClick={handleStopQuiz} className="mt-6 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
-                End game hoy 👉
-            </button>
-        </div>
-    );
-};
-
-// -- Vocabulary Quiz Section --
-const VocabularyQuizSection = ({ vocabularyList, onQuizEnd, onGoBack }) => {
-    const [currentQuestion, setCurrentQuestion] = useState(null);
-    const [options, setOptions] = useState([]);
-    const [quizType, setQuizType] = useState('');
-    const [feedback, setFeedback] = useState('');
-    const [correctAnswers, setCorrectAnswers] = useState(0);
-    const [totalQuestions, setTotalQuestions] = useState(0);
-
-    const generateQuestion = (type) => {
-        if (vocabularyList.length < 4) return;
-        const correctVocab = vocabularyList[Math.floor(Math.random() * vocabularyList.length)];
-        let questionText = '', correctAnswer = '', incorrectOptions = [];
-        
-        switch (type) {
-            case 'word_furigana-meaning':
-                questionText = `${correctVocab.word} (${correctVocab.furigana})`;
-                correctAnswer = correctVocab.meaning;
-                incorrectOptions = vocabularyList.filter(v => v.id !== correctVocab.id).map(v => v.meaning);
-                break;
-            case 'meaning-word_furigana':
-                questionText = correctVocab.meaning;
-                correctAnswer = `${correctVocab.word} (${correctVocab.furigana})`;
-                incorrectOptions = vocabularyList.filter(v => v.id !== correctVocab.id).map(v => `${v.word} (${v.furigana})`);
-                break;
-            default: return;
-        }
-
-        const uniqueIncorrectOptions = Array.from(new Set(incorrectOptions)).filter(opt => opt && opt !== correctAnswer);
-        const finalOptions = shuffleArray([...shuffleArray(uniqueIncorrectOptions).slice(0, 3), correctAnswer]);
-
-        setCurrentQuestion({ question: questionText, correctAnswer: correctAnswer });
-        setOptions(finalOptions);
-    };
-
-    const startQuiz = (type) => {
-        if (vocabularyList.length < 4) {
-            setFeedback('Cần ít nhất 4 từ vựng để bắt đầu quiz.');
-            return;
-        }
-        setQuizType(type);
-        setCorrectAnswers(0);
-        setTotalQuestions(0);
-        setFeedback('');
-        generateQuestion(type);
-    };
-
-    const handleAnswer = (selectedAnswer) => {
-        setTotalQuestions(prev => prev + 1);
-        if (selectedAnswer === currentQuestion.correctAnswer) {
-            setCorrectAnswers(prev => prev + 1);
-            setFeedback('�ビンゴ!');
-        } else {
-            setFeedback(`ちょっと. Đáp án đúng là: ${currentQuestion.correctAnswer}`);
-        }
-        setTimeout(() => {
-            setFeedback('');
-            generateQuestion(quizType);
-        }, 1500);
-    };
-    
-    const handleStopQuiz = () => {
-        onQuizEnd(correctAnswers, totalQuestions, quizType);
-    };
-
-    if (!quizType) {
-        return (
-             <div className="p-4 bg-white rounded-lg shadow-md text-center">
-                <h2 className="text-2xl font-bold mb-4 text-gray-800">Chọn loại Quiz Từ Vựng</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <button onClick={() => startQuiz('word_furigana-meaning')} className="bg-[#093FB4] text-white py-3 px-6 rounded-md hover:bg-[#072f8a] transition-colors">Từ vựng → Nghĩa</button>
-                    <button onClick={() => startQuiz('meaning-word_furigana')} className="bg-[#093FB4] text-white py-3 px-6 rounded-md hover:bg-[#072f8a] transition-colors">Nghĩa → Từ vựng</button>
-                </div>
-                {feedback && <p className="mt-4 text-red-500 font-medium">{feedback}</p>}
-                <button onClick={onGoBack} className="mt-6 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600">Quay lại</button>
-            </div>
-        );
-    }
-    
-    if (!currentQuestion) {
-        return (
-            <div className="p-4 bg-white rounded-lg shadow-md text-center">
-                <p className="text-lg text-gray-700">Đang chuẩn bị câu hỏi...</p>
-            </div>
-        );
-    }
-    
-     return (
-        <div className="p-4 bg-white rounded-lg shadow-md text-center">
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">{currentQuestion.question}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                {options.map((option, index) => (
-                    <button key={index} onClick={() => handleAnswer(option)} className="bg-[#FFD8D8] text-slate-900 py-3 px-6 rounded-md hover:bg-red-200 text-lg font-semibold transition-colors">
-                        {option}
-                    </button>
-                ))}
-            </div>
-            {feedback && (
-                <p className={`mt-4 text-xl font-bold ${feedback.includes('🎉ビンゴ!') ? 'text-green-600' : 'text-red-600'}`}>{feedback}</p>
-            )}
-            <button onClick={handleStopQuiz} className="mt-6 bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">
-                End game hoy 👉
-            </button>
-        </div>
-    );
-};
-
+import ExamGoalModal from './components/ExamGoalModal';
+import SearchBar from './components/SearchBar';
+import DictionarySearchModal from './components/DictionarySearchModal';
+import KanjiPage from './pages/KanjiPage';
+import VocabularyPage from './pages/VocabularyPage';
+import HomePage from './pages/HomePage';
+import GrammarPage from './pages/GrammarPage';
+import GamesPage from './pages/GamesPage';
+import KaiwaPage from './pages/KaiwaPage';
+import LoginPage from './pages/LoginPage';
 
 // =================================================================
 // main App component
 // =================================================================
+
+const API_URL = 'http://localhost:3001/api';
+const ITEMS_PER_PAGE = 10;
+
 const App = () => {
-  const API_URL = 'http://localhost:3001/api';
-  const ITEMS_PER_PAGE = 10;
+  const [activeTab, setActiveTab] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authToken, setAuthToken] = useState(null);
+  const [examGoals, setExamGoals] = useState([]);
+  const [showExamModal, setShowExamModal] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [searchResults, setSearchResults] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // --- STATE QUẢN LÝ CHUNG ---
-  const [activeTab, setActiveTab] = useState('kanji');
-  const [kanjiList, setKanjiList] = useState([]);
-  const [vocabularyList, setVocabularyList] = useState([]);
-  const [viewState, setViewState] = useState('main'); // 'main', 'quiz', 'end'
-  
-  // State cho phân trang
-  const [kanjiPage, setKanjiPage] = useState(1);
-  const [vocabPage, setVocabPage] = useState(1);
+  const fetchServerProfile = async (token) => {
+    const profileResponse = await fetch('http://localhost:3001/auth/profile', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-  // State cho tìm kiếm
-  const [kanjiSearchTerm, setKanjiSearchTerm] = useState('');
-  const [vocabSearchTerm, setVocabSearchTerm] = useState('');
+    if (!profileResponse.ok) {
+      throw new Error('Stored token is invalid or expired');
+    }
 
-  // State cho chỉnh sửa
-  const [editingKanji, setEditingKanji] = useState(null);
-  const [editingVocabulary, setEditingVocabulary] = useState(null);
+    return profileResponse.json();
+  };
 
-  const [quizResult, setQuizResult] = useState({ score: 0, total: 0, type: '' });
-  const [newKanji, setNewKanji] = useState({ kanji_char: '', han_tu: '', onyomi: '', kunyomi: '', meaning: '', level: 'N3' });
-  const [newVocabulary, setNewVocabulary] = useState({ word: '', furigana: '', meaning: '', level: 'N3' });
-
-  // Tải dữ liệu từ backend
   useEffect(() => {
-    const fetchData = async () => {
-        try {
-            const [kanjiRes, vocabRes] = await Promise.all([
-                fetch(`${API_URL}/kanji`),
-                fetch(`${API_URL}/vocabulary`)
-            ]);
-            if (!kanjiRes.ok || !vocabRes.ok) {
-                throw new Error('Lỗi mạng khi tải dữ liệu');
-            }
-            const kanjiData = await kanjiRes.json();
-            const vocabData = await vocabRes.json();
-            setKanjiList(kanjiData);
-            setVocabularyList(vocabData);
-        } catch (error) {
-            console.error("Lỗi khi tải dữ liệu từ server:", error);
-            alert("Không thể kết nối đến server. Vui lòng đảm bảo backend đang chạy.");
-        }
+    const bootstrapAuth = async () => {
+      const savedToken = localStorage.getItem('authToken');
+      const savedUser = localStorage.getItem('user');
+
+      if (!savedToken || !savedUser) {
+        return;
+      }
+
+      try {
+        const profile = await fetchServerProfile(savedToken);
+
+        setIsAuthenticated(true);
+        setUser({
+          id: profile.id,
+          email: profile.email,
+          name: profile.name,
+          avatar_url: profile.avatar_url
+        });
+        setAuthToken(savedToken);
+        fetchExamGoals(savedToken);
+      } catch (_error) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+        setUser(null);
+        setAuthToken(null);
+      }
     };
-    fetchData();
+
+    bootstrapAuth();
   }, []);
 
-  // lọc danh sách dựa trên từ khóa tìm kiếm
-  const filteredKanji = useMemo(() => {
-    const term = kanjiSearchTerm.toLowerCase();
-    if (!term) return kanjiList;
-    return kanjiList.filter(k => 
-        (k.kanji_char || '').toLowerCase().includes(term) ||
-        (k.han_tu || '').toLowerCase().includes(term) ||
-        (k.onyomi || '').toLowerCase().includes(term) ||
-        (k.kunyomi || '').toLowerCase().includes(term) ||
-        (k.meaning || '').toLowerCase().includes(term)
-    );
-  }, [kanjiSearchTerm, kanjiList]);
-
-  const filteredVocab = useMemo(() => {
-    const term = vocabSearchTerm.toLowerCase();
-    if (!term) return vocabularyList;
-    return vocabularyList.filter(v => 
-        (v.word || '').toLowerCase().includes(term) ||
-        (v.furigana || '').toLowerCase().includes(term) ||
-        (v.meaning || '').toLowerCase().includes(term)
-    );
-  }, [vocabSearchTerm, vocabularyList]);
-
-  // --- Handlers ĐỂ GỌI API ---
-  const handleNewKanjiChange = (e) => setNewKanji(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  const handleAddKanji = async (e) => {
-    e.preventDefault();
+  const fetchExamGoals = async (token) => {
     try {
-        const response = await fetch(`${API_URL}/kanji`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newKanji)
-        });
-        if (!response.ok) {
-            const contentType = response.headers.get('content-type');
-            if (contentType?.includes('application/json')) {
-                const errData = await response.json();
-                if (errData.code === 'ER_DUP_ENTRY' || errData.message.includes('Duplicate entry')) {
-                    throw new Error(`Kanji "${newKanji.kanji_char}" đã tồn tại trong database!`);
-                }
-                throw new Error(errData.message || 'Lỗi khi thêm Kanji');
-            } else {
-                throw new Error(`HTTP ${response.status}: Server không trả về JSON`);
-            }
-        }
-        const addedKanji = await response.json();
-        setKanjiList(prev => [addedKanji, ...prev]);
-        setKanjiPage(1);
-        setNewKanji({ kanji_char: '', han_tu: '', onyomi: '', kunyomi: '', meaning: '', level: 'N3' });
-        alert('Thêm Kanji thành công!');
-    } catch (error) {
-        console.error("Lỗi khi thêm Kanji:", error);
-        alert(`Lỗi: ${error.message}`);
+      const response = await fetch('http://localhost:3001/api/exam-goals', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setExamGoals(data);
+      }
+    } catch (err) {
+      console.error('Error fetching exam goals:', err);
     }
   };
 
-  // Handlers cho Kanji editing
-  const handleEditKanji = (kanji) => {
-    setEditingKanji(kanji);
-  };
-
-  const handleUpdateKanji = async (updatedKanji) => {
-    try {
-        const response = await fetch(`${API_URL}/kanji/${updatedKanji.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedKanji)
-        });
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.message || 'Lỗi khi cập nhật Kanji');
-        }
-        const updated = await response.json();
-        setKanjiList(prev => prev.map(k => k.id === updated.id ? updated : k));
-        setEditingKanji(null);
-    } catch (error) {
-        console.error("Lỗi khi cập nhật Kanji:", error);
-        alert(`Lỗi: ${error.message}`);
-    }
-  };
-
-  const handleDeleteKanji = async (id) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa Kanji này?')) return;
-    
-    console.log('Attempting to delete Kanji with ID:', id);
-    
-    try {
-        const response = await fetch(`${API_URL}/kanji/${id}`, {
-            method: 'DELETE'
-        });
-        
-        console.log('Delete response status:', response.status);
-        console.log('Delete response headers:', response.headers.get('content-type'));
-        
-        if (!response.ok) {
-            if (response.status === 404) {
-                // Item already deleted or doesn't exist - remove from UI anyway
-                console.log('Item not found in database, removing from UI');
-                setKanjiList(prev => prev.filter(k => k.id !== id));
-                alert('Kanji không tồn tại trong database, đã xóa khỏi danh sách');
-                return;
-            }
-            
-            const contentType = response.headers.get('content-type');
-            if (contentType?.includes('application/json')) {
-                const errData = await response.json();
-                throw new Error(errData.message || `HTTP ${response.status}: Lỗi khi xóa Kanji`);
-            } else {
-                throw new Error(`HTTP ${response.status}: Backend DELETE endpoint có vấn đề`);
-            }
-        }
-        
-        // Check if there's a response body
-        const contentType = response.headers.get('content-type');
-        let responseData = null;
-        if (contentType?.includes('application/json')) {
-            responseData = await response.json();
-            console.log('Delete response data:', responseData);
-        }
-        
-        // Successfully deleted - update the list immediately
-        console.log('Delete successful, updating state...');
-        setKanjiList(prev => {
-            const newList = prev.filter(k => k.id !== id);
-            console.log('Old list length:', prev.length, 'New list length:', newList.length);
-            return newList;
-        });
-        
-        // Reset page if current page is empty
-        const totalPages = Math.ceil((kanjiList.length - 1) / ITEMS_PER_PAGE);
-        if (kanjiPage > totalPages && totalPages > 0) {
-            setKanjiPage(totalPages);
-        }
-        
-        alert('Xóa Kanji thành công!');
-        
-    } catch (error) {
-        console.error("Lỗi khi xóa Kanji:", error);
-        alert(`Lỗi: ${error.message}`);
-    }
-  };
-  
-  const handleNewVocabularyChange = (e) => setNewVocabulary(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  const handleAddVocabulary = async (e) => {
-    e.preventDefault();
-    try {
-        const vocabToSend = {
-            word: newVocabulary.word,
-            furigana: newVocabulary.furigana,
-            meaning: newVocabulary.meaning,
-            level: newVocabulary.level
+  const handleLoginSuccess = (userData, token) => {
+    const syncProfile = async () => {
+      try {
+        const profile = await fetchServerProfile(token);
+        const normalizedUser = {
+          id: profile.id,
+          email: profile.email,
+          name: profile.name,
+          avatar_url: profile.avatar_url
         };
-        const response = await fetch(`${API_URL}/vocabulary`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(vocabToSend)
-        });
-        if (!response.ok) {
-            const contentType = response.headers.get('content-type');
-            if (contentType?.includes('application/json')) {
-                const errData = await response.json();
-                if (errData.code === 'ER_DUP_ENTRY' || errData.message.includes('Duplicate entry')) {
-                    throw new Error(`Từ vựng "${newVocabulary.word}" đã tồn tại trong database!`);
-                }
-                throw new Error(errData.message || 'Lỗi khi thêm từ vựng');
-            } else {
-                throw new Error(`HTTP ${response.status}: Server không trả về JSON`);
-            }
-        }
-        const addedVocab = await response.json();
-        setVocabularyList(prev => [addedVocab, ...prev]);
-        setVocabPage(1);
-        setNewVocabulary({ word: '', furigana: '', meaning: '', level: 'N3' });
-        alert('Thêm từ vựng thành công!');
-    } catch (error) {
-        console.error("Lỗi khi thêm từ vựng:", error);
-        alert(`Lỗi: ${error.message}`);
-    }
+
+        localStorage.setItem('user', JSON.stringify(normalizedUser));
+        setIsAuthenticated(true);
+        setUser(normalizedUser);
+        setAuthToken(token);
+        fetchExamGoals(token);
+      } catch (_error) {
+        setIsAuthenticated(true);
+        setUser(userData);
+        setAuthToken(token);
+        fetchExamGoals(token);
+      }
+    };
+
+    syncProfile();
   };
 
-  // Handlers cho Vocabulary editing
-  const handleEditVocabulary = (vocabulary) => {
-    setEditingVocabulary(vocabulary);
-  };
-
-  const handleUpdateVocabulary = async (updatedVocabulary) => {
-    try {
-        const response = await fetch(`${API_URL}/vocabulary/${updatedVocabulary.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedVocabulary)
-        });
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.message || 'Lỗi khi cập nhật từ vựng');
-        }
-        const updated = await response.json();
-        setVocabularyList(prev => prev.map(v => v.id === updated.id ? updated : v));
-        setEditingVocabulary(null);
-    } catch (error) {
-        console.error("Lỗi khi cập nhật từ vựng:", error);
-        alert(`Lỗi: ${error.message}`);
-    }
-  };
-
-  const handleDeleteVocabulary = async (id) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa từ vựng này?')) return;
-    
-    console.log('Attempting to delete Vocabulary with ID:', id);
-    
-    try {
-        const response = await fetch(`${API_URL}/vocabulary/${id}`, {
-            method: 'DELETE'
-        });
-        
-        console.log('Delete response status:', response.status);
-        
-        if (!response.ok) {
-            if (response.status === 404) {
-                // Item already deleted or doesn't exist - remove from UI anyway
-                setVocabularyList(prev => prev.filter(v => v.id !== id));
-                alert('Từ vựng không tồn tại trong database, đã xóa khỏi danh sách');
-                return;
-            }
-            
-            // Check if response is JSON
-            const contentType = response.headers.get('content-type');
-            if (contentType?.includes('application/json')) {
-                const errData = await response.json();
-                throw new Error(errData.message || `HTTP ${response.status}: Lỗi khi xóa từ vựng`);
-            } else {
-                throw new Error(`HTTP ${response.status}: Endpoint DELETE /vocabulary/${id} không tồn tại hoặc backend chưa được cài đặt đúng`);
-            }
-        }
-        
-        // Successfully deleted - update the list immediately
-        console.log('Delete successful, updating state...');
-        setVocabularyList(prev => {
-            const newList = prev.filter(v => v.id !== id);
-            console.log('New list length:', newList.length);
-            return newList;
-        });
-        
-        // Reset page if current page is empty
-        const totalPages = Math.ceil((vocabularyList.length - 1) / ITEMS_PER_PAGE);
-        if (vocabPage > totalPages && totalPages > 0) {
-            setVocabPage(totalPages);
-        }
-        
-        alert('Xóa từ vựng thành công!');
-        
-    } catch (error) {
-        console.error("Lỗi khi xóa từ vựng:", error);
-        alert(`Lỗi: ${error.message}`);
-    }
-  };
-
-  const handleCancelEdit = () => {
-    setEditingKanji(null);
-    setEditingVocabulary(null);
-  };
-  
-  const handleQuizEnd = (score, total, type) => {
-      console.log("Quiz đã kết thúc! Điểm số:", score, "Tổng số câu:", total);
-      setQuizResult({ score, total, type });
-      setViewState('end');
-  };
-  
-  const handleRestartQuiz = () => {
-      setQuizResult({ score: 0, total: 0, type: '' });
-      setViewState('quiz');
-  };
-  
-  const handleGoBackToMain = () => {
-       setViewState('main');
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    setUser(null);
+    setAuthToken(null);
+    setExamGoals([]);
+    setActiveTab('home');
+    sessionStorage.removeItem('aya_assistant_navigation');
   };
 
   const handleTabChange = (tab) => {
-      setActiveTab(tab);
-      setViewState('main');
+    setActiveTab(tab);
+    setMobileMenuOpen(false);
   };
 
-  // --- Get gif feedback ---
-  const getFeedbackGif = (score, total) => {
-    if (total === 0) {
-        return "/Mucho Estudio GIF - Anime Study Concentrate - Discover & Share GIFs.gif";
+  const handleAssistantNavigate = (navigation) => {
+    if (!navigation || !navigation.tab) return;
+    setActiveTab(navigation.tab);
+    setMobileMenuOpen(false);
+    sessionStorage.setItem(
+      'aya_assistant_navigation',
+      JSON.stringify({
+        ...navigation,
+        requestedAt: Date.now()
+      })
+    );
+  };
+
+  const handleSearch = async (query) => {
+    setIsSearching(true);
+    setShowSearchModal(true);
+    try {
+      const response = await fetch(`http://localhost:3001/api/search?q=${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data);
+      } else {
+        setSearchResults({ query, results: { words: [], kanji: [], vocabulary: [] } });
+      }
+    } catch (err) {
+      console.error('Error searching:', err);
+      setSearchResults({ query, results: { words: [], kanji: [], vocabulary: [] } });
+    } finally {
+      setIsSearching(false);
     }
-    const percentage = (score / total) * 100;
-
-    if (percentage >= 70) {
-        return "/yay-yeah.gif";
-    } else {
-        return "/OpOe.gif"; 
-    } 
   };
+
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  const activeExamGoal = examGoals.find(goal => !goal.completed) || examGoals[0];
 
   return (
-    <div className="min-h-screen bg-[#FFFCFB] font-sans text-gray-900 flex flex-col">
-      <header className="bg-gradient-to-r from-rose-400 to-red-500 text-white p-4 shadow-lg">
-        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center">
-            <img
-              src="/logo_page.png"
-              alt="Logo Học tiếng Nhật"
-              className="h-10 w-10 mr-3 rounded-full bg-white"
-            />
-            <h1 className="text-3xl font-bold">AyaLearning</h1>
-          </div>
+    <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
+      <header className="fixed top-0 inset-x-0 z-40 bg-gradient-to-r from-rose-400 to-red-500 text-white shadow-lg">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between py-4">
+            {/* Logo and Brand - Clickable to go home */}
+            <button
+              onClick={() => handleTabChange('home')}
+              className="flex items-center hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              <img
+                src="/logo_page.png"
+                alt="Logo Học tiếng Nhật"
+                className="h-8 w-8 sm:h-10 sm:w-10 mr-2 sm:mr-3 rounded-full bg-white"
+              />
+              <h1 className="text-lg sm:text-2xl font-bold">AyaLearning</h1>
+            </button>
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
+              <SearchBar onSearch={handleSearch} isSearching={isSearching} />
+              
+              <button 
+                onClick={() => handleTabChange('kanji')} 
+                className={`flex items-center space-x-2 py-2 px-3 xl:px-4 border-b-2 transition-all duration-300 ${
+                  activeTab === 'kanji' 
+                    ? 'text-white border-b-white' 
+                    : 'text-white border-b-transparent hover:border-b-white/50'
+                }`}
+              >
+                <span className="text-lg font-bold">字</span>
+                <span className="hidden xl:inline">Kanji</span>
+              </button>
+              
+              <button 
+                onClick={() => handleTabChange('vocabulary')} 
+                className={`flex items-center space-x-2 py-2 px-3 xl:px-4 border-b-2 transition-all duration-300 ${
+                  activeTab === 'vocabulary' 
+                    ? 'text-white border-b-white' 
+                    : 'text-white border-b-transparent hover:border-b-white/50'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/>
+                </svg>
+                <span className="hidden xl:inline">Vocabulary</span>
+              </button>
+              
+              <button 
+                onClick={() => handleTabChange('grammar')} 
+                className={`flex items-center space-x-2 py-2 px-3 xl:px-4 border-b-2 transition-all duration-300 ${
+                  activeTab === 'grammar' 
+                    ? 'text-white border-b-white' 
+                    : 'text-white border-b-transparent hover:border-b-white/50'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd"/>
+                </svg>
+                <span className="hidden xl:inline">Grammar</span>
+              </button>
+              
+              <button 
+                onClick={() => handleTabChange('games')} 
+                className={`flex items-center space-x-2 py-2 px-3 xl:px-4 border-b-2 transition-all duration-300 ${
+                  activeTab === 'games' 
+                    ? 'text-white border-b-white' 
+                    : 'text-white border-b-transparent hover:border-b-white/50'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                </svg>
+                <span className="hidden xl:inline">Game</span>
+              </button>
 
-          {/* thanh tìm kiếm ở header */}
-          {viewState === 'main' && (
-            <div className="relative flex-grow max-w-lg w-full">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                    <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <button 
+                onClick={() => handleTabChange('kaiwa')} 
+                className={`flex items-center space-x-2 py-2 px-3 xl:px-4 border-b-2 transition-all duration-300 ${
+                  activeTab === 'kaiwa' 
+                    ? 'text-white border-b-white' 
+                    : 'text-white border-b-transparent hover:border-b-white/50'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd"/>
+                </svg>
+                <span className="hidden xl:inline">Kaiwa</span>
+              </button>
+            </nav>
+            
+            {/* Desktop User Menu - Right side */}
+            <div className="hidden lg:block relative">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className="flex items-center space-x-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+              >
+                {user?.avatar_url && (
+                  <img src={user.avatar_url} alt={user.name} className="h-6 w-6 rounded-full" />
+                )}
+                <span className="hidden sm:inline text-sm font-semibold">{user?.name || 'Account'}</span>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white text-gray-900 rounded-lg shadow-lg z-50">
+                  <div className="px-4 py-3 border-b border-gray-200 text-xs text-gray-600">
+                    <div className="font-semibold text-gray-800">{user?.email || 'No email'}</div>
+                    <div>User #{user?.id || '-'}</div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowExamModal(true);
+                      setUserMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-3 hover:bg-gray-100 border-b border-gray-200 flex items-center space-x-2"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                     </svg>
-                </span>
-                <input
-                    type="text"
-                    placeholder={activeTab === 'kanji' ? "Tìm kiếm Kanji..." : "Tìm kiếm từ vựng..."}
-                    value={activeTab === 'kanji' ? kanjiSearchTerm : vocabSearchTerm}
-                    onChange={activeTab === 'kanji' ? (e) => setKanjiSearchTerm(e.target.value) : (e) => setVocabSearchTerm(e.target.value)}
-                    className="w-full py-2 pl-10 pr-4 text-gray-700 bg-white border border-transparent rounded-full focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-red-200"
-                />
+                    <span>Mục tiêu thi</span>
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-3 hover:bg-gray-100 flex items-center space-x-2 text-red-600"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd"/>
+                    </svg>
+                    <span>Đăng xuất</span>
+                  </button>
+                </div>
+              )}
+            </div>
+            
+            {/* Mobile Hamburger Menu Button */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg hover:bg-white/20 transition-colors"
+            >
+              {mobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+              )}
+            </button>
+          </div>
+          
+          {/* Mobile Menu - Dropdown */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden border-t border-white/20 py-4 animate-fadeIn">
+              <nav className="flex flex-col space-y-2">
+                <button 
+                  onClick={() => handleTabChange('kanji')} 
+                  className={`flex items-center space-x-3 py-3 px-4 rounded-lg transition-all duration-300 ${
+                    activeTab === 'kanji' 
+                      ? 'bg-white text-rose-500 font-semibold' 
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  <span className="text-lg font-bold">字</span>
+                  <span>Kanji</span>
+                </button>
+                
+                <button 
+                  onClick={() => handleTabChange('vocabulary')} 
+                  className={`flex items-center space-x-3 py-3 px-4 rounded-lg transition-all duration-300 ${
+                    activeTab === 'vocabulary' 
+                      ? 'bg-white text-rose-500 font-semibold' 
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/>
+                  </svg>
+                  <span>Vocabulary</span>
+                </button>
+                
+                <button 
+                  onClick={() => handleTabChange('grammar')} 
+                  className={`flex items-center space-x-3 py-3 px-4 rounded-lg transition-all duration-300 ${
+                    activeTab === 'grammar' 
+                      ? 'bg-white text-rose-500 font-semibold' 
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd"/>
+                  </svg>
+                  <span>Grammar</span>
+                </button>
+                
+                <button 
+                  onClick={() => handleTabChange('games')} 
+                  className={`flex items-center space-x-3 py-3 px-4 rounded-lg transition-all duration-300 ${
+                    activeTab === 'games' 
+                      ? 'bg-white text-rose-500 font-semibold' 
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                  </svg>
+                  <span>Game</span>
+                </button>
+
+                <button 
+                  onClick={() => handleTabChange('kaiwa')} 
+                  className={`flex items-center space-x-3 py-3 px-4 rounded-lg transition-all duration-300 ${
+                    activeTab === 'kaiwa' 
+                      ? 'bg-white text-rose-500 font-semibold' 
+                      : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd"/>
+                  </svg>
+                  <span>Kaiwa</span>
+                </button>
+                
+                <hr className="border-white/20 my-3" />
+                
+                <button
+                  onClick={() => {
+                    setShowExamModal(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center space-x-3 py-3 px-4 text-white hover:bg-white/20 rounded-lg transition-colors w-full"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                  </svg>
+                  <span>Mục tiêu thi</span>
+                </button>
+                
+                {user && (
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-3 py-3 px-4 text-white hover:bg-white/20 rounded-lg transition-colors w-full"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd"/>
+                    </svg>
+                    <span>Đăng xuất</span>
+                  </button>
+                )}
+              </nav>
             </div>
           )}
-
-          <nav className="flex space-x-4">
-            <button onClick={() => handleTabChange('kanji')} className={`py-2 px-4 rounded-md transition-colors duration-300 ${activeTab === 'kanji' ? 'bg-white text-red-600 shadow-md font-semibold' : 'hover:bg-white/20'}`}>Học Kanji</button>
-            <button onClick={() => handleTabChange('vocabulary')} className={`py-2 px-4 rounded-md transition-colors duration-300 ${activeTab === 'vocabulary' ? 'bg-white text-red-600 shadow-md font-semibold' : 'hover:bg-white/20'}`}>Học Từ Vựng</button>
-          </nav>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 mt-4 flex-grow">
-        {viewState === 'main' && activeTab === 'kanji' && (
-          <KanjiSection
-            kanjiList={filteredKanji}
-            newKanji={newKanji}
-            handleNewKanjiChange={handleNewKanjiChange}
-            handleAddKanji={handleAddKanji}
-            onStartQuiz={() => setViewState('quiz')}
-            currentPage={kanjiPage}
-            onPageChange={setKanjiPage}
-            itemsPerPage={ITEMS_PER_PAGE}
-            onEditKanji={handleEditKanji}
-            onDeleteKanji={handleDeleteKanji}
-            editingKanji={editingKanji}
-            onUpdateKanji={handleUpdateKanji}
-            onCancelEdit={handleCancelEdit}
-          />
-        )}
-        {viewState === 'main' && activeTab === 'vocabulary' && (
-          <VocabularySection
-            vocabularyList={filteredVocab}
-            newVocabulary={newVocabulary}
-            handleNewVocabularyChange={handleNewVocabularyChange}
-            handleAddVocabulary={handleAddVocabulary}
-            onStartQuiz={() => setViewState('quiz')}
-            currentPage={vocabPage}
-            onPageChange={setVocabPage}
-            itemsPerPage={ITEMS_PER_PAGE}
-            onEditVocabulary={handleEditVocabulary}
-            onDeleteVocabulary={handleDeleteVocabulary}
-            editingVocabulary={editingVocabulary}
-            onUpdateVocabulary={handleUpdateVocabulary}
-            onCancelEdit={handleCancelEdit}
-          />
-        )}
-        {viewState === 'quiz' && activeTab === 'kanji' && (
-          <KanjiQuizSection
-            kanjiList={kanjiList}
-            onQuizEnd={handleQuizEnd}
-            onGoBack={handleGoBackToMain}
-          />
-        )}
-        {viewState === 'quiz' && activeTab === 'vocabulary' && (
-          <VocabularyQuizSection
-            vocabularyList={vocabularyList}
-            onQuizEnd={handleQuizEnd}
-            onGoBack={handleGoBackToMain}
-          />
-        )}
-        {viewState === 'end' && (
-          <QuizEndScreen
-            score={quizResult.score}
-            total={quizResult.total}
-            imageSrc={getFeedbackGif(quizResult.score, quizResult.total)}
-            imageAlt="Feedback GIF"
-            onRestart={handleRestartQuiz}
-            onGoBack={handleGoBackToMain}
-          />
-        )}
+      <main className="flex-grow pt-20 lg:pt-24">
+        {activeTab === 'home' && <div className="container mx-auto px-4 py-4 sm:py-6 lg:py-8"><HomePage activeExamGoal={activeExamGoal} authToken={authToken} /></div>}
+        {activeTab === 'kanji' && <div className="container mx-auto px-4 py-4 sm:py-6 lg:py-8"><KanjiPage API_URL={API_URL} ITEMS_PER_PAGE={ITEMS_PER_PAGE} token={authToken} /></div>}
+        {activeTab === 'vocabulary' && <div className="container mx-auto px-4 py-4 sm:py-6 lg:py-8"><VocabularyPage API_URL={API_URL} ITEMS_PER_PAGE={ITEMS_PER_PAGE} token={authToken} /></div>}
+        {activeTab === 'grammar' && <div className="container mx-auto px-4 py-4 sm:py-6 lg:py-8"><GrammarPage /></div>}
+        {activeTab === 'games' && <GamesPage token={authToken} />}
+        {activeTab === 'kaiwa' && <KaiwaPage token={authToken} />}
       </main>
 
       <footer className="bg-gray-800 text-white p-4 text-center mt-8">
-        <p>Learning Japanese with Aya ✍(◔◡◔)</p>
+        <p className="text-sm sm:text-base">Learning Japanese with Aya ✍(◔◡◔)</p>
       </footer>
 
-      {/* ChatBot component */}
-      <ChatBot />
+      <ExamGoalModal 
+        isOpen={showExamModal} 
+        onClose={() => setShowExamModal(false)}
+        onSave={(goal) => setExamGoals([...examGoals, goal])}
+        authToken={authToken}
+      />
+
+      <DictionarySearchModal
+        isOpen={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
+        searchResults={searchResults}
+        isLoading={isSearching}
+      />
+
+      <ChatBot token={authToken} onNavigate={handleAssistantNavigate} currentPage={activeTab} />
     </div>
   );
 };
