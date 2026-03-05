@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Live2DViewer from './Live2DViewer';
+import { buildApiUrl } from '../config/api';
 
 const KaiwaChat = ({ character, token, onBack }) => {
   const [messages, setMessages] = useState([]);
@@ -65,7 +66,7 @@ const KaiwaChat = ({ character, token, onBack }) => {
   }, []);
 
   const callKaiwaChat = async (userMessage) => {
-    const response = await fetch('http://localhost:3001/api/kaiwa/chat', {
+    const response = await fetch(buildApiUrl('/kaiwa/chat'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -171,7 +172,7 @@ const KaiwaChat = ({ character, token, onBack }) => {
 
     try {
       const audioBase64 = await blobToBase64(audioBlob);
-      const response = await fetch('http://localhost:3001/api/kaiwa/voice-turn', {
+      const response = await fetch(buildApiUrl('/kaiwa/voice-turn'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

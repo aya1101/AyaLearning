@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { buildBaseUrl } from '../config/api';
 
 const LoginPage = ({ onLoginSuccess }) => {
   const [error, setError] = useState('');
@@ -10,7 +11,7 @@ const LoginPage = ({ onLoginSuccess }) => {
       setLoading(true);
       setError('');
 
-      const response = await fetch('http://localhost:3001/auth/google/callback', {
+      const response = await fetch(buildBaseUrl('/auth/google/callback'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

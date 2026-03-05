@@ -10,12 +10,12 @@ import GrammarPage from './pages/GrammarPage';
 import GamesPage from './pages/GamesPage';
 import KaiwaPage from './pages/KaiwaPage';
 import LoginPage from './pages/LoginPage';
+import { API_URL, buildApiUrl, buildBaseUrl } from './config/api';
 
 // =================================================================
 // main App component
 // =================================================================
 
-const API_URL = 'http://localhost:3001/api';
 const ITEMS_PER_PAGE = 10;
 
 const App = () => {
@@ -32,7 +32,7 @@ const App = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   const fetchServerProfile = async (token) => {
-    const profileResponse = await fetch('http://localhost:3001/auth/profile', {
+    const profileResponse = await fetch(buildBaseUrl('/auth/profile'), {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -78,7 +78,7 @@ const App = () => {
 
   const fetchExamGoals = async (token) => {
     try {
-      const response = await fetch('http://localhost:3001/api/exam-goals', {
+      const response = await fetch(buildApiUrl('/exam-goals'), {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (response.ok) {
@@ -150,7 +150,7 @@ const App = () => {
     setIsSearching(true);
     setShowSearchModal(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`${buildApiUrl('/search')}?q=${encodeURIComponent(query)}`);
       if (response.ok) {
         const data = await response.json();
         setSearchResults(data);

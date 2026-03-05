@@ -246,7 +246,7 @@ const KanjiPage = ({ API_URL, ITEMS_PER_PAGE, token }) => {
     useEffect(() => {
         if (!token) return;
 
-        const streamUrl = `http://localhost:3001/api/realtime/stream?token=${encodeURIComponent(token)}`;
+        const streamUrl = `${API_URL}/realtime/stream?token=${encodeURIComponent(token)}`;
         const stream = new EventSource(streamUrl);
 
         const handleKanjiChanged = () => {

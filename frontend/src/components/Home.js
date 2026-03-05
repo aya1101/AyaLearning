@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ExamCountdownTimer from './ExamCountdownTimer';
+import { buildApiUrl } from '../config/api';
 
 const Home = ({ activeExamGoal, authToken }) => {
   const [stats, setStats] = useState({
@@ -26,7 +27,7 @@ const Home = ({ activeExamGoal, authToken }) => {
         setLoading(true);
         
         // Fetch study stats
-        const statsResponse = await fetch('http://localhost:3001/api/study-stats', {
+        const statsResponse = await fetch(buildApiUrl('/study-stats'), {
           headers: { 'Authorization': `Bearer ${authToken}` },
         });
         
@@ -36,7 +37,7 @@ const Home = ({ activeExamGoal, authToken }) => {
         }
 
         // Fetch game stats for weekly activity
-        const gameStatsResponse = await fetch('http://localhost:3001/api/game-stats', {
+        const gameStatsResponse = await fetch(buildApiUrl('/game-stats'), {
           headers: { 'Authorization': `Bearer ${authToken}` },
         });
 

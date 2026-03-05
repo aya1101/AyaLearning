@@ -64,6 +64,21 @@ OPENAI_ASR_MODEL=small
 
 > `VOICEVOX_SPEAKER` is fallback only. Per-character speaker is configured in `backend/config/kaiwa-characters.json`.
 
+### 2.1) Configure frontend env
+
+Create `frontend/.env`:
+
+```bash
+REACT_APP_BACKEND_URL=http://localhost:3001
+REACT_APP_GOOGLE_CLIENT_ID=your_google_oauth_web_client_id
+```
+
+For production, set `REACT_APP_BACKEND_URL` to your public backend domain (Render/other), for example:
+
+```bash
+REACT_APP_BACKEND_URL=https://your-backend.onrender.com
+```
+
 ### 3) Start infrastructure services (DB + ASR + VOICEVOX)
 
 One command from workspace root:
@@ -86,6 +101,29 @@ npm run start-dev
 
 - Frontend: `http://localhost:3000`
 - Backend: `http://localhost:3001`
+
+## Deploy (Vercel + Render)
+
+### Recommended architecture
+
+- Frontend: Vercel (Root Directory: `frontend`)
+- Backend: Render Web Service (Root Directory: `backend`)
+- Database: Render PostgreSQL
+
+### Backend (Render)
+
+- Build Command: `npm install`
+- Start Command: `npm start`
+- Required envs: `PORT`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `FRONTEND_URL`
+- Run schema once: `node runSqlFile.js schema.base.sql`
+
+### Frontend (Vercel)
+
+- Root Directory: `frontend`
+- Build Command: `npm run build`
+- Output Directory: `build`
+- Env: `REACT_APP_BACKEND_URL=https://<your-render-backend-domain>`
+- Env: `REACT_APP_GOOGLE_CLIENT_ID=<your-google-client-id>`
 
 ## Kaiwa Voice Mode
 

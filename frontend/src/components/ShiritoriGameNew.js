@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { API_URL } from '../config/api';
 
 const ShiritoriGame = ({ token, difficulty = 'N5', gameMode = 'casual' }) => {
-  const API_URL = 'http://localhost:3001/api';
-  
+
   // Game state
   const [gameStarted, setGameStarted] = useState(false);
   const [currentWord, setCurrentWord] = useState(null);

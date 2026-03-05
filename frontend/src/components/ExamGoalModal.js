@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { buildApiUrl } from '../config/api';
 
 const ExamGoalModal = ({ isOpen, onClose, onSave, authToken }) => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,7 @@ const ExamGoalModal = ({ isOpen, onClose, onSave, authToken }) => {
       setLoading(true);
       setError('');
 
-      const response = await fetch('http://localhost:3001/api/exam-goals', {
+      const response = await fetch(buildApiUrl('/exam-goals'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

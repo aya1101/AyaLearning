@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { buildApiUrl } from '../config/api';
 
 /**
  * Custom hook to fetch game data from API
@@ -29,7 +30,7 @@ export const useGameData = (gameType, difficulty = 'N5', limit = 50, token) => {
         });
 
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/games/${gameType}/words?${queryParams}`,
+          `${buildApiUrl(`/games/${gameType}/words`)}?${queryParams}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -72,7 +73,7 @@ export const useGameResults = (token) => {
       setError(null);
 
       const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_URL}/game-results`,
+        buildApiUrl('/game-results'),
         {
           method: 'POST',
           headers: {

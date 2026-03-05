@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE = 'http://localhost:3001';
+const API_BASE = API_BASE_URL;
 
 const ChatBot = ({ token, onNavigate, currentPage = null }) => {
   const [isOpen, setIsOpen] = useState(false);

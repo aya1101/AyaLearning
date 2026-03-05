@@ -1,0 +1,109 @@
+services:
+  - type: web
+    name: aya-backend
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    region: oregon
+    rootDir: backend
+    envVars:
+      # Server
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      
+      # Database (from Postgres instance)
+      - key: DB_HOST
+        fromDatabase:
+          name: aya-postgres
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: aya-postgres
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: aya-postgres
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: aya-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: aya-postgres
+          property: password
+      
+      # Security
+      - key: JWT_SECRET
+        generateValue: true
+      
+      # Frontend URL (update after Vercel deploy)
+      - key: FRONTEND_URL
+        value: "https://your-frontend.vercel.app"
+      
+      # Google OAuth (set manually in dashboard)
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_ALLOWED_CLIENT_IDS
+        sync: false
+      
+      # Google Calendar OAuth (update after backend domain is known)
+      - key: GOOGLE_CALENDAR_REDIRECT_URI
+        value: "https://aya-backend.onrender.com/api/assistant/calendar/oauth/callback"
+      
+      # TTS (VOICEVOX on private network)
+      - key: TTS_PROVIDER
+        value: voicevox
+      - key: VOICEVOX_API_URL
+        value: "http://voicevox:50021"
+      - key: VOICEVOX_SPEAKER
+        value: "54"
+      
+      # ASR (Faster-Whisper, optional - set if deploying)
+      - key: OPENAI_ASR_ENDPOINT
+        value: "http://asr-service:9000/v1/audio/transcriptions"
+      - key: OPENAI_ASR_MODEL
+        value: small
+      
+      # AI/LLM (set manually in dashboard)
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: "nvidia/nemotron-3-nano-30b-a3b:free"
+    preDeployCommand: node runSqlFile.js schema.base.sql
+
+  - type: pserv
+    name: voicevox
+    runtime: image
+    plan: starter
+    region: oregon
+    image:
+      url: voicevox/voicevox_engine:latest
+    envVars:
+      - key: VOICEVOX_DEFAULT_SPEAKER
+        value: "54"
+
+  - type: pserv
+    name: asr-service
+    runtime: docker
+    plan: starter
+    region: oregon
+    rootDir: asr-service
+    preDeployCommand: "echo 'ASR service ready'"
+
+databases:
+  - name: aya-postgres
+    plan: starter
+    region: oregon
+    databaseName: japanese_learning
+    user: aya_user
+    postgresMajorVersion: "15"
