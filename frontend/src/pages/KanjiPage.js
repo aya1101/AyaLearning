@@ -3,6 +3,7 @@ import * as XLSX from 'xlsx';
 import Flashcard from '../components/Flashcard';
 import Modal from '../components/Modal';
 import MultipleChoiceQuiz from '../components/MultipleChoiceQuiz';
+import HandwritingPractice from '../components/HandwritingPractice';
 
 const KanjiPage = ({ API_URL, ITEMS_PER_PAGE, token }) => {
     const [kanjiList, setKanjiList] = useState([]);
@@ -20,8 +21,8 @@ const KanjiPage = ({ API_URL, ITEMS_PER_PAGE, token }) => {
     });
     const [kanjiModalOpen, setKanjiModalOpen] = useState(false);
     const [isImportingKanji, setIsImportingKanji] = useState(false);
-    const [showStudyCards, setShowStudyCards] = useState(false);
-    const [quizType, setQuizType] = useState(null);
+    const [studyMode, setStudyMode] = useState(null); // 'flashcard' | 'quiz' | 'handwriting' | null
+    const [quizType, setQuizType] = useState(null); // Keep temporarily for backwards compat if needed, or we can use it just for the quiz variant ('kanji-han_tu' etc)
 
     const getAuthHeaders = useCallback(() => (
         token ? { Authorization: `Bearer ${token}` } : {}
@@ -285,18 +286,26 @@ const KanjiPage = ({ API_URL, ITEMS_PER_PAGE, token }) => {
 
     return (
         <>
-            {quizType ? (
+            {studyMode === 'handwriting' ? (
+                <HandwritingPractice
+                    kanjiList={filteredKanji}
+                    onExit={() => setStudyMode(null)}
+                />
+            ) : studyMode === 'quiz' && quizType ? (
                 <MultipleChoiceQuiz
                     items={filteredKanji}
                     quizType={quizType}
-                    onGoBack={() => setQuizType(null)}
+                    onGoBack={() => {
+                        setQuizType(null);
+                        setStudyMode(null);
+                    }}
                 />
-            ) : showStudyCards ? (
+            ) : studyMode === 'flashcard' ? (
                 <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
                     <div className="max-w-4xl mx-auto">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
                             <button
-                                onClick={() => setShowStudyCards(false)}
+                                onClick={() => setStudyMode(null)}
                                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors text-sm sm:text-base"
                             >
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -391,7 +400,7 @@ const KanjiPage = ({ API_URL, ITEMS_PER_PAGE, token }) => {
                                     </div>
                                     
                                     <button
-                                        onClick={() => setShowStudyCards(true)}
+                                        onClick={() => setStudyMode('flashcard')}
                                         disabled={filteredKanji.length === 0}
                                         className="flex items-center justify-center space-x-2 bg-white border-2 border-blue-600 text-blue-600 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg hover:bg-blue-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                     >
@@ -402,7 +411,10 @@ const KanjiPage = ({ API_URL, ITEMS_PER_PAGE, token }) => {
                                     </button>
                                     
                                     <button
-                                        onClick={() => setQuizType('kanji-han_tu')}
+                                        onClick={() => {
+                                            setQuizType('kanji-han_tu');
+                                            setStudyMode('quiz');
+                                        }}
                                         disabled={filteredKanji.length === 0}
                                         className="flex items-center justify-center space-x-2 bg-white border-2 border-gray-300 text-gray-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                     >
@@ -410,6 +422,18 @@ const KanjiPage = ({ API_URL, ITEMS_PER_PAGE, token }) => {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                                         </svg>
                                         <span>Quiz</span>
+                                    </button>
+
+                                    {/* Handwriting Practice Button */}
+                                    <button
+                                        onClick={() => setStudyMode('handwriting')}
+                                        disabled={filteredKanji.length === 0}
+                                        className="flex items-center justify-center space-x-2 bg-white border-2 border-green-500 text-green-600 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg hover:bg-green-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                    >
+                                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                        </svg>
+                                        <span>Handwriting</span>
                                     </button>
                                 </div>
                             </div>

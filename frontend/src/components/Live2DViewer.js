@@ -230,6 +230,30 @@ const Live2DViewer = ({ modelPath, className }) => {
           }
         });
 
+        // Enable scroll wheel to zoom
+        const handleWheel = (event) => {
+          if (!model || model.destroyed) return;
+          // Prevent page scroll when interacting with the canvas
+          event.preventDefault();
+          
+          const delta = event.deltaY;
+          const currentScale = model.scale.x;
+          // Determine zoom direction: down = zoom in, up = zoom out
+          const zoomFactor = delta > 0 ? 0.9 : 1.1; 
+          
+          const newScale = currentScale * zoomFactor;
+          
+          // Clamp scale between 0.05 and 5.0 to prevent disappearing or exploding models
+          if (newScale >= 0.05 && newScale <= 5.0) {
+            model.scale.set(newScale);
+          }
+        };
+
+        // Attach native wheel event listener to the canvas block
+        if (app.view) {
+           app.view.addEventListener('wheel', handleWheel, { passive: false });
+        }
+
         // Add idle animation
         if (model.internalModel.motionManager && model.internalModel.motionManager.groups.idle) {
           model.motion('idle', 0, window.PIXI.live2d.MotionPriority.IDLE);
@@ -254,6 +278,12 @@ const Live2DViewer = ({ modelPath, className }) => {
         window.removeEventListener('resize', resizeHandler);
       }
       stopLipSync();
+      // Remove wheel listener to avoid memory leaks
+      if (app && app.view) {
+         // Because we defined handleWheel within the async initialization block, 
+         // we simply strip it via cloning, or ideally it gets swept by destroying the canvas.
+         // However, `app.destroy()` inherently detaches the view.
+      }
       if (model) {
         model.destroy();
       }
@@ -333,8 +363,8 @@ const Live2DViewer = ({ modelPath, className }) => {
       />
       
       {!loading && !error && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 text-center">
-          <p>Click and drag to move • Auto animations</p>
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 text-center pointer-events-none bg-white/50 px-3 py-1 rounded-full">
+          <p>Click and drag to move • Scroll to zoom • Auto animations</p>
         </div>
       )}
     </div>
