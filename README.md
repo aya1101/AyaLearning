@@ -7,7 +7,7 @@ My personal Japanese learning space (Kanji, Vocabulary, Quiz, Kaiwa voice chat).
 ## Features
 
 - Kanji & Vocabulary management (add/edit/delete/search/pagination)
-![alt text](image.png)
+![alt text](vocab.png)
 - Multiple quiz experiences for self-practice and quick review
 - AI assistant agent for in-app guidance, quick navigation, and study support
 ![alt text](assistant.png)
