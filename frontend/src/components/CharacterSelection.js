@@ -7,18 +7,18 @@ const TarotCard = ({ character, onClick }) => {
       className="relative group cursor-pointer perspective-1000"
     >
       {/* Tarot Card Container */}
-      <div className="relative w-full aspect-[2/3] transform transition-all duration-500 hover:scale-105 hover:-translate-y-2">
+      <div className="relative w-full h-full min-h-[480px] flex flex-col transform transition-all duration-500 hover:scale-105 hover:-translate-y-2">
         {/* Card Border & Glow Effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-amber-200 via-yellow-100 to-amber-300 rounded-2xl shadow-2xl group-hover:shadow-amber-500/50 transition-shadow duration-500" />
         
         {/* Inner Card */}
-        <div className="absolute inset-2 bg-gradient-to-b from-amber-50 to-white rounded-xl overflow-hidden border-2 border-amber-400/50">
+        <div className="absolute inset-2 bg-gradient-to-b from-amber-50 to-white rounded-xl overflow-hidden border-2 border-amber-400/50 flex flex-col">
           {/* Decorative Top Border */}
           <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-amber-300/30 to-transparent" />
           <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-amber-600/40 rounded-full" />
           
           {/* Character Image */}
-          <div className="relative w-full h-3/5 mt-8 px-4 flex items-center justify-center">
+          <div className="relative w-full pt-10 pb-4 px-4 flex-none flex items-center justify-center">
             <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-amber-100 to-yellow-50 shadow-inner flex items-center justify-center overflow-hidden border-4 border-amber-300/50">
               {character.image ? (
                 <img 
@@ -38,7 +38,7 @@ const TarotCard = ({ character, onClick }) => {
           </div>
           
           {/* Character Info */}
-          <div className="relative px-6 py-4 text-center">
+          <div className="relative px-6 pb-10 text-center flex-1 flex flex-col">
             {/* Name with Japanese style */}
             <h3 className="text-2xl font-bold text-gray-800 mb-1 tracking-wide">
               {character.name}
@@ -70,7 +70,7 @@ const TarotCard = ({ character, onClick }) => {
             </div>
             
             {/* Description */}
-            <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
+            <p className="text-sm text-gray-600 leading-relaxed flex-1 flex items-center justify-center">
               {character.description}
             </p>
           </div>
@@ -252,7 +252,7 @@ const CharacterSelection = ({ token, onCharacterSelect }) => {
             {[...Array(3)].map((_, index) => (
               <div
                 key={index}
-                className="relative w-full aspect-[2/3]"
+                className="relative w-full h-full min-h-[480px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 rounded-2xl shadow-lg opacity-60" />
                 <div className="absolute inset-2 bg-white rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
